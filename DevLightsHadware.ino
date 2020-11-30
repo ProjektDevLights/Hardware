@@ -15,7 +15,7 @@ WiFiServer server(2389);
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
-#define PIN 5         //D1
+#define PIN 5 //D1
 #define PIXELFORMAT NEO_GRB + NEO_KHZ800
 uint16_t pixelCount = 300;
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
@@ -37,6 +37,20 @@ const int add_id = 0x40;
 const int add_setup = 0x02;
 const int add_ip = 0x80;
 const int add_count = 0x10;
+const int add_pat = 0x20;
+const int add_col = 0x25;
+
+/**PATTERN CONSTANTS 
+ * 1 = plain,
+ * 
+ */
+struct StripColor
+{
+  int r;
+  int g;
+  int b;
+  int pattern;
+};
 
 void setup()
 {
@@ -79,19 +93,15 @@ void loop()
   DynamicJsonDocument data = stringToJson(readTcpData());
   if (data["command"] == "leds")
   {
-    pixels.clear();
-    String color0 = data["data"]["colors"][0];
-    if (data["data"]["pattern"] == "plain") {
-      StringSplitter *splitter = new StringSplitter(color0, '.', 3);
-      pixels.fill(pixels.Color(splitter->getItemAtIndex(0).toInt(), splitter->getItemAtIndex(1).toInt(), splitter->getItemAtIndex(2).toInt()), 0 , pixelCount);
-      pixels.show();
-    }
-    delay(100);
-    pixels.show();
+    StripColor color = stringsToColor(data["data"]["pattern"], data["data"]["colors"][0]);
+    setStrip(color);
+    writeColor(color);
     Serial.println("show pixels");
   }
-  if (data["command"] == "reset") {
-    for (int i = 0; i < 512; i++) {
+  if (data["command"] == "reset")
+  {
+    for (int i = 0; i < 512; i++)
+    {
       EEPROM.write(i, 0x00);
     }
     pixels.clear();
@@ -108,12 +118,14 @@ void loop()
     Serial.println("restarting...");
     ESP.restart();
   }
-  if ( data["command"] == "count") {
+  if (data["command"] == "count")
+  {
     String countString = data["data"];
     uint16_t count = countString.toInt();
     Serial.println(count);
     Serial.println(byte(count));
-    if (count >= 0) {
+    if (count >= 0)
+    {
       Serial.println("if");
       EEPROM.write(add_count, byte(count));
       EEPROM.commit();
@@ -131,6 +143,15 @@ void loop()
     pixels.setBrightness(brightness);
     delay(100);
     Serial.println("set brightness");
-
+  }
+  if (data["command"] == "off")
+  {
+    pixels.clear();
+    pixels.show();
+  }
+  if (data["command"] == "on")
+  {
+    setStrip(readColor());
+    pixels.show();
   }
 }

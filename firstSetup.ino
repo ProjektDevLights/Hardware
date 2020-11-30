@@ -12,7 +12,7 @@ void firstSetup()
 
   //Beim Server anmelden
   WiFiClient c;
-  HttpClient client(c, "TimoLaptop.local", 80);
+  HttpClient client(c, "devlight.local", 80);
 
   int err = 0;
   String request = "/esp/setup?ip=";
@@ -47,10 +47,14 @@ void firstSetup()
         writeId(response);
         Serial.println("succesfully registered");
       }
-    } else {
+    }
+    else
+    {
       Serial.println("someone stole my ip");
     }
-  } else {
+  }
+  else
+  {
     Serial.println("someone stole my ip");
   }
   //just do when registered should occur otherwise
@@ -58,8 +62,10 @@ void firstSetup()
   writeIp(WiFi.localIP());
 
   pixels.begin();
-  pixels.fill(standartColor, 0 , pixelCount);
+  pixels.fill(standartColor, 0, pixelCount);
   pixels.show();
   pixels.updateLength(0);
+  EEPROM.write(add_count,150);
+  EEPROM.commit();
   pixelCount = 0;
 }
