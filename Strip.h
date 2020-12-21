@@ -19,8 +19,8 @@ public:
     void showPattern(StripPattern pattern);
     void clear();
     void setBrightness(int brightness);
+    void showColor(RGB color);
 
 private:
-    void showColor(RGB color);
 };
 #endif

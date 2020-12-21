@@ -23,3 +23,10 @@ StripPattern Utils::generatePattern(String patternString, JsonArray colorArray)
     }
     return pattern;
 }
+
+DynamicJsonDocument Utils::stringToJSON(String raw)
+{
+    DynamicJsonDocument doc(2048);
+    deserializeJson(doc, raw);
+    return doc;
+}

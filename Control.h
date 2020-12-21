@@ -16,6 +16,8 @@ private:
     WiFiServer server;
     String readData();
     DynamicJsonDocument stringToJSON(String raw);
+    void fading(int delay);
+    void fadeTo(RGB color, int timeout);
 };
 
 #endif

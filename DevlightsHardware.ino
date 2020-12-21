@@ -9,5 +9,4 @@ Control control;
 void loop()
 {
     control.loop();
-    delay(100);
 }

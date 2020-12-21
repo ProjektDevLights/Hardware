@@ -2,6 +2,7 @@
 #include "ESP8266WiFi.h"
 #include "ArduinoJson.h"
 #include "StringSplitter.h"
+#include "ArduinoJson.h"
 
 #include "StripPattern.h"
 
@@ -12,6 +13,7 @@ class Utils
 public:
     static String ipToString(IPAddress ip);
     static StripPattern generatePattern(String pattern, JsonArray colorArray);
+    static DynamicJsonDocument stringToJSON(String raw);
 };
 
 #endif
