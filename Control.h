@@ -3,6 +3,7 @@
 #include "ArduinoJson.h"
 
 #include "Utils.h"
+#include "Fader.h"
 
 #ifndef Control_h
 #define Control_h
@@ -14,10 +15,12 @@ public:
 
 private:
     WiFiServer server;
+    Fader fader;
     String readData();
     DynamicJsonDocument stringToJSON(String raw);
     void fading(int delay);
     void fadeTo(RGB color, int timeout);
+    void initStrip();
 };
 
 #endif

@@ -118,5 +118,4 @@ void Setup::restart()
             Serial.println("error updating ip 2");
         }
     }
-    strip.showPattern(Storage::getStripPattern());
 }

@@ -14,6 +14,7 @@ public:
     static String ipToString(IPAddress ip);
     static StripPattern generatePattern(String pattern, JsonArray colorArray);
     static DynamicJsonDocument stringToJSON(String raw);
+    static int stepRound(float number);
 };
 
 #endif

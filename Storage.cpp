@@ -101,6 +101,7 @@ StripPattern Storage::getStripPattern()
         add_r += 3;
     }
     pattern.pattern = EEPROM.read(add_pattern);
+    pattern.timeout = EEPROM.read(add_timeout);
     return pattern;
 }
 
@@ -116,6 +117,7 @@ void Storage::setStripPattern(StripPattern pattern)
         add_w += 3;
     }
     EEPROM.write(add_pattern, pattern.pattern);
+    EEPROM.write(add_timeout, pattern.timeout);
     EEPROM.commit();
 }
 

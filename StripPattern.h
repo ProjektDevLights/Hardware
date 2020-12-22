@@ -6,5 +6,6 @@ struct StripPattern
 {
     RGB colors[10];
     int pattern;
+    int timeout;
 };
 #endif

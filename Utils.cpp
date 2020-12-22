@@ -14,6 +14,14 @@ StripPattern Utils::generatePattern(String patternString, JsonArray colorArray)
     {
         pattern.pattern = 1;
     }
+    if (patternString == "fading")
+    {
+        pattern.pattern = 2;
+    }
+    if (patternString == "gradient")
+    {
+        pattern.pattern = 3;
+    }
     for (int i = 0; i < 10; i++)
     {
         StringSplitter *splitter = new StringSplitter(colorArray[i], '.', 3);
@@ -29,4 +37,9 @@ DynamicJsonDocument Utils::stringToJSON(String raw)
     DynamicJsonDocument doc(2048);
     deserializeJson(doc, raw);
     return doc;
+}
+
+int Utils::stepRound(float number)
+{
+    return number == 0 ? 0 : number < 0 ? floor(number) : ceil(number);
 }

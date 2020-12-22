@@ -18,9 +18,20 @@ Strip::Strip()
 void Strip::showPattern(StripPattern pattern)
 {
     Storage::setStripPattern(pattern);
-    if (pattern.pattern == 1)
+    /**
+     * Patterns:
+     * plain: 1
+     * fading: 2
+     * 
+     *
+     */
+    if (pattern.pattern == 1 || pattern.pattern == 2)
     {
         showColor(pattern.colors[0]);
+    }
+    else if (pattern.pattern == 3)
+    {
+        showGradient(pattern.colors[0], pattern.colors[1]);
     }
     else
     {
@@ -28,7 +39,7 @@ void Strip::showPattern(StripPattern pattern)
     }
 }
 
-bool Strip::setLength(int length, lengthCallback callback)
+bool Strip::setLength(int length, std::function<void()> callback)
 {
     if (setLength(length))
     {
@@ -72,5 +83,52 @@ void Strip::showColor(RGB color)
     pixels.clear();
     pixels.fill(pixels.Color(color.r, color.g, color.b), 0, Storage::getCount());
     delay(10);
+    pixels.show();
+}
+
+void Strip::showGradient(RGB first, RGB second)
+{
+    int count = Storage::getCount();
+
+    float difR = (float)(first.r - second.r) / (float)count;
+    float difG = (float)(first.g - second.g) / (float)count;
+    float difB = (float)(first.b - second.b) / (float)count;
+
+    int rStep = -Utils::stepRound(difR); // 255 - 0 /15
+    int gStep = -Utils::stepRound(difG);
+    int bStep = -Utils::stepRound(difB);
+
+    Serial.println("difs");
+    Serial.println(difR);
+    Serial.println(difG);
+    Serial.println(difB);
+
+    Serial.println(Utils::stepRound(difR));
+    Serial.println(Utils::stepRound(difG));
+    Serial.println(Utils::stepRound(difB));
+
+    int r = first.r;
+    int g = first.g;
+    int b = first.b;
+    for (int i = 0; i < count; i++)
+    {
+        int goalR = r + rStep;
+        int goalG = g + gStep;
+        int goalB = b + bStep;
+
+        r = goalR <= 255 && goalR >= 0 ? goalR : r;
+        g = goalG <= 255 && goalG >= 0 ? goalG : g;
+        b = goalB <= 255 && goalB >= 0 ? goalB : b;
+
+        //-----debug----
+        Serial.print(r);
+        Serial.print(".");
+        Serial.print(g);
+        Serial.print(".");
+        Serial.println(b);
+        //-----debug----
+
+        pixels.setPixelColor(i, r, g, b);
+    }
     pixels.show();
 }
