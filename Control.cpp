@@ -54,6 +54,16 @@ void Control::loop()
             strip.clear();
             ESP.restart();
         }
+        if(command == "blink"){
+            RGB color = Utils::generateColor(data["data"]["color"]);
+            Serial.println(color.r);
+            Serial.println(color.g);
+            Serial.println(color.b);
+
+            strip.showColor(color);
+            delay(int(data["data"]["time"]));
+            initStrip();
+        }
         if (command == "fade")
         {
             // BIG TODO still endless loop (esp is single threaded)

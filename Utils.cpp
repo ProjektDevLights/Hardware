@@ -32,6 +32,18 @@ StripPattern Utils::generatePattern(String patternString, JsonArray colorArray)
     return pattern;
 }
 
+RGB Utils::generateColor(String colorString)
+{
+
+    Serial.println(colorString);
+    RGB color;
+    StringSplitter *splitter = new StringSplitter(colorString, '.', 3);
+    color.r = splitter->getItemAtIndex(0).toInt();
+    color.g = splitter->getItemAtIndex(1).toInt();
+    color.b = splitter->getItemAtIndex(2).toInt();
+    return color;
+}
+
 DynamicJsonDocument Utils::stringToJSON(String raw)
 {
     DynamicJsonDocument doc(2048);
