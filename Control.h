@@ -14,7 +14,7 @@ public:
     void loop();
 
 private:
-    WiFiServer server;
+    WiFiClient client;
     Fader fader;
     String readData();
     DynamicJsonDocument stringToJSON(String raw);

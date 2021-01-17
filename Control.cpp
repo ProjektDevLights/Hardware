@@ -1,9 +1,8 @@
 #include "Control.h"
 
-Control::Control() : server(2389)
+Control::Control()
 {
-    server.begin();
-    server.setNoDelay(true);
+   // Serial.println();
 }
 
 bool first = true;
@@ -12,9 +11,11 @@ void Control::loop()
 {
     if (first)
     {
+        Serial.println(client.connect("devlight.local", 2389));
         first = false;
         initStrip();
     }
+
     DynamicJsonDocument data = Utils::stringToJSON(readData());
     String command = data["command"];
     if (!data.isNull())
@@ -45,14 +46,30 @@ void Control::loop()
         }
         if (command == "restart")
         {
+            client.write("shutdown\n");
+            client.stop();
             strip.clear();
+            ESP.restart();
+        }
+        if (command == "serverRestart"){
+            delay(5000);
+            client.write("shutdown\n");
+            client.stop();
             ESP.restart();
         }
         if (command == "reset")
         {
             Storage::clear();
             strip.clear();
+            client.write("shutdown\n");
+            client.stop();
             ESP.restart();
+        }
+        if(command == "blink"){
+            RGB color = Utils::generateColor(data["data"]["color"]);
+            strip.showColor(color);
+            delay(int(data["data"]["time"]));
+            initStrip();
         }
         if(command == "blink"){
             RGB color = Utils::generateColor(data["data"]["color"]);
@@ -63,6 +80,22 @@ void Control::loop()
             strip.showColor(color);
             delay(int(data["data"]["time"]));
             initStrip();
+        }
+        if(command == "rainbow"){
+            while(true){
+                strip.showColor({255,0,0});
+                delay(1000);
+                strip.showColor({255,255,0});
+                delay(1000);
+                strip.showColor({0,255,0});
+                delay(1000);
+                strip.showColor({0,255,255});
+                delay(1000);
+                strip.showColor({0,0,255});
+                delay(1000);
+                strip.showColor({255,0,255});
+                delay(1000);
+            }
         }
         if (command == "fade")
         {
@@ -77,7 +110,6 @@ void Control::loop()
 String Control::readData()
 {
     //read data from server if available ---------------------------------
-    WiFiClient client = server.available();
     if (!client)
     {
         return "";
@@ -106,14 +138,12 @@ String Control::readData()
     digitalWrite(LED_BUILTIN, HIGH);
     Serial.println(readString);
     Serial.println("Ending connection");
-
     client.println("Ending connection");
-    client.stop();
-
     return readString;
 }
 void Control::initStrip()
 {
+    Serial.println("init strip");
     StripPattern pattern = Storage::getStripPattern();
     if (pattern.pattern == 1 || pattern.pattern == 3)
     {
