@@ -13,6 +13,7 @@ void Control::loop()
     {
         Serial.println(client.connect("devlight.local", 2389));
         first = false;
+        Serial.println("first init");
         initStrip();
     }
 
@@ -24,6 +25,7 @@ void Control::loop()
         {
             int count = (int)data["data"];
             strip.setLength(count, [this]() {
+                Serial.println("count init");
                 initStrip();
             });
         }
@@ -71,17 +73,7 @@ void Control::loop()
             RGB color = Utils::generateColor(data["data"]["color"]);
             strip.showColor(color);
             delay(int(data["data"]["time"]));
-            initStrip();
-        }
-        if (command == "blink")
-        {
-            RGB color = Utils::generateColor(data["data"]["color"]);
-            Serial.println(color.r);
-            Serial.println(color.g);
-            Serial.println(color.b);
-
-            strip.showColor(color);
-            delay(int(data["data"]["time"]));
+            Serial.println("blink init");
             initStrip();
         }
         if (command == "rainbow")
@@ -138,9 +130,9 @@ String Control::readData()
     }
 
     //  indicate incomming data (debug);
-    digitalWrite(LED_BUILTIN, LOW);
+    /* digitalWrite(LED_BUILTIN, LOW);
     delay(50);
-    digitalWrite(LED_BUILTIN, HIGH);
+    digitalWrite(LED_BUILTIN, HIGH); */
     Serial.println(readString);
     Serial.println("Ending connection");
     client.println("Ending connection");
@@ -153,6 +145,7 @@ void Control::initStrip()
     if (pattern.pattern == 1 || pattern.pattern == 3)
     {
         Serial.println("plain or gradient pattern");
+        Serial.println(pattern.colors[0].r);
         strip.showPattern(pattern);
     }
     if (pattern.pattern == 2)
