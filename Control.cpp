@@ -2,7 +2,7 @@
 
 Control::Control()
 {
-   // Serial.println();
+    // Serial.println();
 }
 
 bool first = true;
@@ -51,7 +51,8 @@ void Control::loop()
             strip.clear();
             ESP.restart();
         }
-        if (command == "serverRestart"){
+        if (command == "serverRestart")
+        {
             delay(5000);
             client.write("shutdown\n");
             client.stop();
@@ -65,13 +66,15 @@ void Control::loop()
             client.stop();
             ESP.restart();
         }
-        if(command == "blink"){
+        if (command == "blink")
+        {
             RGB color = Utils::generateColor(data["data"]["color"]);
             strip.showColor(color);
             delay(int(data["data"]["time"]));
             initStrip();
         }
-        if(command == "blink"){
+        if (command == "blink")
+        {
             RGB color = Utils::generateColor(data["data"]["color"]);
             Serial.println(color.r);
             Serial.println(color.g);
@@ -81,19 +84,21 @@ void Control::loop()
             delay(int(data["data"]["time"]));
             initStrip();
         }
-        if(command == "rainbow"){
-            while(true){
-                strip.showColor({255,0,0});
+        if (command == "rainbow")
+        {
+            while (true)
+            {
+                strip.showColor({255, 0, 0});
                 delay(1000);
-                strip.showColor({255,255,0});
+                strip.showColor({255, 255, 0});
                 delay(1000);
-                strip.showColor({0,255,0});
+                strip.showColor({0, 255, 0});
                 delay(1000);
-                strip.showColor({0,255,255});
+                strip.showColor({0, 255, 255});
                 delay(1000);
-                strip.showColor({0,0,255});
+                strip.showColor({0, 0, 255});
                 delay(1000);
-                strip.showColor({255,0,255});
+                strip.showColor({255, 0, 255});
                 delay(1000);
             }
         }

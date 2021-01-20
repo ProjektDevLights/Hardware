@@ -28,6 +28,7 @@ StripPattern Utils::generatePattern(String patternString, JsonArray colorArray)
         pattern.colors[i].r = splitter->getItemAtIndex(0).toInt();
         pattern.colors[i].g = splitter->getItemAtIndex(1).toInt();
         pattern.colors[i].b = splitter->getItemAtIndex(2).toInt();
+        delete splitter;
     }
     return pattern;
 }
@@ -41,6 +42,8 @@ RGB Utils::generateColor(String colorString)
     color.r = splitter->getItemAtIndex(0).toInt();
     color.g = splitter->getItemAtIndex(1).toInt();
     color.b = splitter->getItemAtIndex(2).toInt();
+    delete splitter;
+
     return color;
 }
 
