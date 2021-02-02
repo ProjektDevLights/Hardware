@@ -100,8 +100,16 @@ StripPattern Storage::getStripPattern()
         pattern.colors[i].b = EEPROM.read(add_r + 2);
         add_r += 3;
     }
+    char ints[5];
+    add_r = add_timeout;
+    for (int i = 0; i < 5; i++)
+    {
+        ints[i] = EEPROM.read(add_r);
+        add_r++;
+    }
+
     pattern.pattern = EEPROM.read(add_pattern);
-    pattern.timeout = EEPROM.read(add_timeout);
+    pattern.timeout = atoi(ints);
     return pattern;
 }
 
@@ -116,9 +124,47 @@ void Storage::setStripPattern(StripPattern pattern)
         EEPROM.write(add_w + 2, pattern.colors[i].b);
         add_w += 3;
     }
+    char ints[5];
+    itoa(pattern.timeout, ints, 10);
+    add_w = add_timeout;
+    for (int i = 0; i < 5; i++)
+    {
+        EEPROM.write(add_w, ints[i]);
+        add_w++;
+    }
     EEPROM.write(add_pattern, pattern.pattern);
-    EEPROM.write(add_timeout, pattern.timeout);
     EEPROM.commit();
+}
+
+void Storage::setIsOn(bool isOn)
+{
+    if (isOn)
+    {
+        EEPROM.write(add_on, 1);
+    }
+    else
+    {
+        EEPROM.write(add_on, 2);
+    }
+
+    EEPROM.commit();
+}
+
+bool Storage::getIsOn()
+{
+    int isOn = EEPROM.read(add_on);
+    return isOn == 1;
+}
+
+void Storage::setBrightness(int brightness)
+{
+    EEPROM.write(add_brightness, brightness);
+    EEPROM.commit();
+}
+
+int Storage::getBrightness()
+{
+    return EEPROM.read(add_brightness);
 }
 
 void Storage::clear()

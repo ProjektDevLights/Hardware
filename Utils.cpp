@@ -6,7 +6,7 @@ String Utils::ipToString(IPAddress ip)
            "." + String(ip[2]) + "." + String(ip[3]);
 }
 
-StripPattern Utils::generatePattern(String patternString, JsonArray colorArray)
+StripPattern Utils::generatePattern(String patternString, JsonArray colorArray, int timeout)
 {
     StripPattern pattern;
     String color = colorArray[0];
@@ -30,13 +30,13 @@ StripPattern Utils::generatePattern(String patternString, JsonArray colorArray)
         pattern.colors[i].b = splitter->getItemAtIndex(2).toInt();
         delete splitter;
     }
+    pattern.timeout = timeout;
     return pattern;
 }
 
 RGB Utils::generateColor(String colorString)
 {
 
-    Serial.println(colorString);
     RGB color;
     StringSplitter *splitter = new StringSplitter(colorString, '.', 3);
     color.r = splitter->getItemAtIndex(0).toInt();
@@ -49,7 +49,12 @@ RGB Utils::generateColor(String colorString)
 
 DynamicJsonDocument Utils::stringToJSON(String raw)
 {
+
     DynamicJsonDocument doc(2048);
+    if (raw == "")
+    {
+        return doc;
+    }
     deserializeJson(doc, raw);
     return doc;
 }

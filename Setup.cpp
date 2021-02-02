@@ -23,16 +23,15 @@ void Setup::init()
 {
     strip = Strip();
     Serial.begin(115200);
-    Serial.println("");
     EEPROM.begin(512);
     pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void Setup::first()
 {
-    Serial.println("Initializing first Setup");
+    Serial.println("first");
     WiFiClient c;
-    HttpClient client(c, "devlight.local", 80);
+    HttpClient client(c, "192.168.188.62", 80);
     int err = 0;
     String request = "/esp/setup?ip=";
     request += Utils::ipToString(WifiManager::getIp());
@@ -73,29 +72,25 @@ void Setup::first()
                 Storage::setCount(0);
                 strip.showPattern(startup);
                 Storage::setStripPattern(startup);
-                //Serial.println("succesfully registered");
             }
         }
         else
         {
-            Serial.println("someone stole my ip 1");
         }
     }
     else
     {
-        Serial.println("someone stole my ip 2");
     }
 }
 
 void Setup::restart()
 {
-    Serial.println("Initializing restart Setup");
     //if ip changes notify server
+    Serial.println("restart");
     if (Utils::ipToString(Storage::getIp()) != Utils::ipToString(WifiManager::getIp()))
     {
-        Serial.println("ip changed");
         WiFiClient c;
-        HttpClient client(c, "devlight.local", 80);
+        HttpClient client(c, "192.168.188.62", 80);
         int err = 0;
         //TODO save and read id
         String id = Storage::getId();
@@ -110,12 +105,10 @@ void Setup::restart()
             }
             else
             {
-                Serial.println("error updating ip 1");
             }
         }
         else
         {
-            Serial.println("error updating ip 2");
         }
     }
 }

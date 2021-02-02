@@ -8,7 +8,6 @@ void WifiManager::connect(String ssid, String password)
         delay(500);
         Serial.print(".");
     }
-    Serial.println(WiFi.localIP());
     Serial.println("\n");
 }
 

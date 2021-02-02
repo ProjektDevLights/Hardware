@@ -2,12 +2,10 @@
 
 Fader::Fader()
 {
-    Serial.println("fader constrcut");
 }
 
 Fader::~Fader()
 {
-    Serial.println("fader destruct");
 }
 
 void Fader::loop(int pTimeout)
@@ -78,11 +76,11 @@ void Fader::fadeTo(RGB colorTo)
             strip.showPattern(pat);
 
             //-----debug----
-            Serial.print(r);
-            Serial.print(".");
-            Serial.print(g);
-            Serial.print(".");
-            Serial.println(b);
+            //Serial.print(r);
+            //Serial.print(".");
+            //Serial.print(g);
+            //Serial.print(".");
+            //Serial.println(b);
             //-----debug----
         }
     }

@@ -9,33 +9,61 @@
 clock_prescale_set(clock_div_1);
 #endif
 
-Adafruit_NeoPixel pixels(150, PIN, PIXELFORMAT);
+int activePattern;
+StripPattern currentPattern;
+RGB currentColor;
+RGB goalColor;
+unsigned long lastUpdate;
+
+Adafruit_NeoPixel pixels(1000, PIN, PIXELFORMAT);
 Strip::Strip()
 {
     pixels.begin();
 }
 
+void Strip::update()
+{
+    switch (activePattern)
+    {
+    case 2:
+        fadeUpdate();
+        break;
+
+    default:
+        break;
+    }
+}
+
 void Strip::showPattern(StripPattern pattern)
 {
-    Storage::setStripPattern(pattern);
     /**
      * Patterns:
      * plain: 1
      * fading: 2
-     * 
+     * gradient: 3
      *
      */
-    if (pattern.pattern == 1 || pattern.pattern == 2)
+    Serial.println(pattern.timeout);
+    currentPattern = pattern;
+    activePattern = pattern.pattern;
+    if (pattern.pattern == 1)
     {
+        Storage::setStripPattern(pattern);
         showColor(pattern.colors[0]);
+    }
+    else if (pattern.pattern == 2)
+    {
+        currentColor = Storage::getStripPattern().colors[0];
+        Storage::setStripPattern(pattern);
+        goalColor = RGB({255, 0, 0});
     }
     else if (pattern.pattern == 3)
     {
+        Storage::setStripPattern(pattern);
         showGradient(pattern.colors[0], pattern.colors[1]);
     }
     else
     {
-        Serial.println("Wrong pattern");
     }
 }
 
@@ -82,7 +110,7 @@ void Strip::showColor(RGB color)
 {
     pixels.clear();
     pixels.fill(pixels.Color(color.r, color.g, color.b), 0, Storage::getCount());
-    delay(10);
+    delay(1);
     pixels.show();
 }
 
@@ -98,15 +126,6 @@ void Strip::showGradient(RGB first, RGB second)
     int gStep = -Utils::stepRound(difG);
     int bStep = -Utils::stepRound(difB);
 
-    Serial.println("difs");
-    Serial.println(difR);
-    Serial.println(difG);
-    Serial.println(difB);
-
-    Serial.println(Utils::stepRound(difR));
-    Serial.println(Utils::stepRound(difG));
-    Serial.println(Utils::stepRound(difB));
-
     int r = first.r;
     int g = first.g;
     int b = first.b;
@@ -121,14 +140,87 @@ void Strip::showGradient(RGB first, RGB second)
         b = goalB <= 255 && goalB >= 0 ? goalB : b;
 
         //-----debug----
-        Serial.print(r);
-        Serial.print(".");
-        Serial.print(g);
-        Serial.print(".");
-        Serial.println(b);
+        //Serial.print(r);
+        //Serial.print(".");
+        //Serial.print(g);
+        //Serial.print(".");
+        //Serial.println(b);
         //-----debug----
 
         pixels.setPixelColor(i, r, g, b);
     }
     pixels.show();
+}
+
+void Strip::fadeUpdate()
+{
+
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - lastUpdate > currentPattern.timeout)
+    {
+        Serial.print("current: ");
+        Serial.println(currentMillis);
+        Serial.print("last: ");
+        Serial.println(lastUpdate);
+        Serial.println(currentMillis - lastUpdate);
+        Serial.println("fade");
+        setNewGoal();
+        lastUpdate = currentMillis;
+
+        int r = currentColor.r;
+        int g = currentColor.g;
+        int b = currentColor.b;
+
+        int rTo = goalColor.r;
+        int gTo = goalColor.g;
+        int bTo = goalColor.b;
+
+        int rFac = rTo == r ? 0 : r < rTo ? 1 : -1;
+        int gFac = gTo == g ? 0 : g < gTo ? 1 : -1;
+        int bFac = bTo == b ? 0 : b < bTo ? 1 : -1;
+
+        int goalR = (r + rFac);
+        int goalG = (g + gFac);
+        int goalB = (b + bFac);
+
+        r = ((goalR <= rTo && rFac == 1) || (goalR >= rTo && rFac == -1)) ? goalR : r;
+        g = ((goalG <= gTo && gFac == 1) || (goalG >= gTo && gFac == -1)) ? goalG : g;
+        b = ((goalB <= bTo && bFac == 1) || (goalB >= bTo && bFac == -1)) ? goalB : b;
+        showColor({r, g, b});
+        currentColor = RGB({r, g, b});
+        currentPattern.colors[0] = RGB({r, g, b});
+        Storage::setStripPattern(currentPattern);
+    }
+}
+
+void Strip::setNewGoal()
+{
+    if (currentColor == goalColor)
+    {
+        if (goalColor == RGB({255, 0, 0}))
+        {
+            goalColor = RGB({255, 255, 0});
+        }
+        else if (goalColor == RGB({255, 255, 0}))
+        {
+            goalColor = RGB({0, 255, 0});
+        }
+        else if (goalColor == RGB({0, 255, 0}))
+        {
+            goalColor = RGB({0, 255, 255});
+        }
+        else if (goalColor == RGB({0, 255, 255}))
+        {
+            goalColor = RGB({0, 0, 255});
+        }
+        else if (goalColor == RGB({0, 0, 255}))
+        {
+            goalColor = RGB({255, 0, 255});
+        }
+        else if (goalColor == RGB({255, 0, 255}))
+        {
+            goalColor = RGB({255, 0, 0});
+        }
+    }
 }

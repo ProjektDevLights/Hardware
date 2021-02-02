@@ -2,7 +2,6 @@
 
 Control::Control()
 {
-    // Serial.println();
 }
 
 bool first = true;
@@ -11,11 +10,12 @@ void Control::loop()
 {
     if (first)
     {
-        Serial.println(client.connect("devlight.local", 2389));
+        client.connect("192.168.188.62", 2389);
         first = false;
-        Serial.println("first init");
         initStrip();
     }
+
+    strip.update();
 
     DynamicJsonDocument data = Utils::stringToJSON(readData());
     String command = data["command"];
@@ -25,25 +25,27 @@ void Control::loop()
         {
             int count = (int)data["data"];
             strip.setLength(count, [this]() {
-                Serial.println("count init");
                 initStrip();
             });
         }
         if (command == "leds")
         {
-            StripPattern pattern = Utils::generatePattern(data["data"]["pattern"], data["data"]["colors"]);
+            StripPattern pattern = Utils::generatePattern(data["data"]["pattern"], data["data"]["colors"], data["data"]["timeout"]);
             strip.showPattern(pattern);
         }
         if (command == "off")
         {
+            Storage::setIsOn(false);
             strip.clear();
         }
         if (command == "on")
         {
+            Storage::setIsOn(true);
             strip.showPattern(Storage::getStripPattern());
         }
         if (command == "brightness")
         {
+            Storage::setBrightness((int)data["data"]);
             strip.setBrightness((int)data["data"]);
         }
         if (command == "restart")
@@ -73,13 +75,13 @@ void Control::loop()
             RGB color = Utils::generateColor(data["data"]["color"]);
             strip.showColor(color);
             delay(int(data["data"]["time"]));
-            Serial.println("blink init");
             initStrip();
         }
-        if (command == "rainbow")
+        /*         if (command == "rainbow")
         {
             while (true)
             {
+                // millis
                 strip.showColor({255, 0, 0});
                 delay(1000);
                 strip.showColor({255, 255, 0});
@@ -93,15 +95,13 @@ void Control::loop()
                 strip.showColor({255, 0, 255});
                 delay(1000);
             }
-        }
-        if (command == "fade")
-        {
-            // BIG TODO still endless loop (esp is single threaded)
-
-            fader.loop((int)data["data"]);
-        }
+        } */
     }
-    delay(1000);
+
+    /*     DynamicJsonDocument *ptrData = &data;
+    String *ptrCommand = &command;
+    delete ptrData;
+    delete ptrCommand; */
 }
 
 String Control::readData()
@@ -111,45 +111,43 @@ String Control::readData()
     {
         return "";
     }
+
     if (!client.connected())
     {
+
         return "";
     }
+
     String readString = "";
-    while (client.connected())
+
+    while (client.available())
     {
-        if (client.available())
+        char c = client.read();
+        if (c == '\n')
         {
-            char c = client.read();
-            if (c == '\n')
-            {
-                break;
-            }
-            readString += c;
+            break;
         }
+        readString += c;
+    }
+    if (readString != "")
+    {
+        Serial.println(readString);
+        client.println("Ending connection\n");
     }
 
     //  indicate incomming data (debug);
     /* digitalWrite(LED_BUILTIN, LOW);
     delay(50);
     digitalWrite(LED_BUILTIN, HIGH); */
-    Serial.println(readString);
-    Serial.println("Ending connection");
-    client.println("Ending connection");
     return readString;
 }
 void Control::initStrip()
 {
-    Serial.println("init strip");
-    StripPattern pattern = Storage::getStripPattern();
-    if (pattern.pattern == 1 || pattern.pattern == 3)
+
+    strip.setBrightness(Storage::getBrightness());
+    if (Storage::getIsOn())
     {
-        Serial.println("plain or gradient pattern");
-        Serial.println(pattern.colors[0].r);
+        StripPattern pattern = Storage::getStripPattern();
         strip.showPattern(pattern);
-    }
-    if (pattern.pattern == 2)
-    {
-        Serial.println("fade pattern");
     }
 }

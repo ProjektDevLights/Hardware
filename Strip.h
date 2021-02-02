@@ -19,8 +19,11 @@ public:
     void clear();
     void setBrightness(int brightness);
     void showColor(RGB color);
+    void update();
 
 private:
     void showGradient(RGB first, RGB second);
+    void fadeUpdate();
+    void setNewGoal();
 };
 #endif
