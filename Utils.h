@@ -17,6 +17,7 @@ public:
     static RGB generateColor(String color);
     static DynamicJsonDocument stringToJSON(String raw);
     static int stepRound(float number);
+    static int generateStep(int start, int end, int time, int delay = 1);
 };
 
 #endif

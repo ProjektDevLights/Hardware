@@ -59,7 +59,18 @@ DynamicJsonDocument Utils::stringToJSON(String raw)
     return doc;
 }
 
+int Utils::generateStep(int start, int end, int time, int delay)
+{
+    if (delay < 1)
+    {
+        delay = 1;
+    }
+    float floatStep = ((start - end) * delay) / time;
+    return stepRound(floatStep);
+}
+
 int Utils::stepRound(float number)
 {
-    return number == 0 ? 0 : number < 0 ? floor(number) : ceil(number);
+    return number == 0 ? 0 : number < 0 ? floor(number)
+                                        : ceil(number);
 }

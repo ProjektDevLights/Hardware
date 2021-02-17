@@ -48,8 +48,8 @@ void Strip::showPattern(StripPattern pattern)
     activePattern = pattern.pattern;
     if (pattern.pattern == 1)
     {
+        fadeToColor(pattern.colors[0]);
         Storage::setStripPattern(pattern);
-        showColor(pattern.colors[0]);
     }
     else if (pattern.pattern == 2)
     {
@@ -109,9 +109,31 @@ void Strip::setBrightness(int brightness)
 void Strip::showColor(RGB color)
 {
     pixels.clear();
-    pixels.fill(pixels.Color(color.r, color.g, color.b), 0, Storage::getCount());
+    pixels.fill(pixels.Color(color.r, color.g, color.b), 0, 96);
     delay(1);
     pixels.show();
+}
+
+void Strip::fadeToColor(RGB color)
+{
+    unsigned long t1 = millis();
+    const int time = 7;
+    RGB oldColor = Storage::getStripPattern().colors[0];
+    int rStep = Utils::generateStep(oldColor.r, color.r, time);
+    int gStep = Utils::generateStep(oldColor.g, color.g, time);
+    int bStep = Utils::generateStep(oldColor.b, color.b, time);
+
+    for (int i = 0; i < time; i++)
+    {
+
+        oldColor.r = oldColor.r - rStep;
+        oldColor.g = oldColor.g - gStep;
+        oldColor.b = oldColor.b - bStep;
+        showColor(oldColor);
+    }
+    unsigned long t2 = millis();
+    Serial.print("apply: ");
+    Serial.println(t2 - t1);
 }
 
 void Strip::showGradient(RGB first, RGB second)
@@ -176,9 +198,12 @@ void Strip::fadeUpdate()
         int gTo = goalColor.g;
         int bTo = goalColor.b;
 
-        int rFac = rTo == r ? 0 : r < rTo ? 1 : -1;
-        int gFac = gTo == g ? 0 : g < gTo ? 1 : -1;
-        int bFac = bTo == b ? 0 : b < bTo ? 1 : -1;
+        int rFac = rTo == r ? 0 : r < rTo ? 1
+                                          : -1;
+        int gFac = gTo == g ? 0 : g < gTo ? 1
+                                          : -1;
+        int bFac = bTo == b ? 0 : b < bTo ? 1
+                                          : -1;
 
         int goalR = (r + rFac);
         int goalG = (g + gFac);
