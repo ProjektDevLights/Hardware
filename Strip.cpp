@@ -43,7 +43,6 @@ void Strip::showPattern(StripPattern pattern)
      * gradient: 3
      *
      */
-    Serial.println(pattern.timeout);
     currentPattern = pattern;
     activePattern = pattern.pattern;
     if (pattern.pattern == 1)
@@ -116,7 +115,6 @@ void Strip::showColor(RGB color)
 
 void Strip::fadeToColor(RGB color)
 {
-    unsigned long t1 = millis();
     const int time = 7;
     RGB oldColor = Storage::getStripPattern().colors[0];
     int rStep = Utils::generateStep(oldColor.r, color.r, time);
@@ -130,16 +128,13 @@ void Strip::fadeToColor(RGB color)
         oldColor.g = oldColor.g - gStep;
         oldColor.b = oldColor.b - bStep;
         showColor(oldColor);
+        yield();
     }
-    unsigned long t2 = millis();
-    Serial.print("apply: ");
-    Serial.println(t2 - t1);
 }
 
 void Strip::showGradient(RGB first, RGB second)
 {
     int count = Storage::getCount();
-
     float difR = (float)(first.r - second.r) / (float)count;
     float difG = (float)(first.g - second.g) / (float)count;
     float difB = (float)(first.b - second.b) / (float)count;
@@ -181,12 +176,6 @@ void Strip::fadeUpdate()
 
     if (currentMillis - lastUpdate > currentPattern.timeout)
     {
-        Serial.print("current: ");
-        Serial.println(currentMillis);
-        Serial.print("last: ");
-        Serial.println(lastUpdate);
-        Serial.println(currentMillis - lastUpdate);
-        Serial.println("fade");
         setNewGoal();
         lastUpdate = currentMillis;
 

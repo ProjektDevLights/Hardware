@@ -52,9 +52,12 @@ void Fader::fadeTo(RGB colorTo)
     int gTo = colorTo.g;
     int bTo = colorTo.b;
 
-    int rFac = rTo == r ? 0 : r < rTo ? 1 : -1;
-    int gFac = gTo == g ? 0 : g < gTo ? 1 : -1;
-    int bFac = bTo == b ? 0 : b < bTo ? 1 : -1;
+    int rFac = rTo == r ? 0 : r < rTo ? 1
+                                      : -1;
+    int gFac = gTo == g ? 0 : g < gTo ? 1
+                                      : -1;
+    int bFac = bTo == b ? 0 : b < bTo ? 1
+                                      : -1;
 
     while (r != rTo || g != gTo || b != bTo)
     {
@@ -84,5 +87,4 @@ void Fader::fadeTo(RGB colorTo)
             //-----debug----
         }
     }
-    Serial.println("--end--");
 }

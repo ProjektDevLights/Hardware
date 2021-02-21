@@ -19,6 +19,7 @@ void Control::loop()
 
     DynamicJsonDocument data = Utils::stringToJSON(readData());
     String command = data["command"];
+    yield();
     if (!data.isNull())
     {
         if (command == "count")
@@ -128,6 +129,7 @@ String Control::readData()
             break;
         }
         readString += c;
+        yield();
     }
     if (readString != "")
     {
