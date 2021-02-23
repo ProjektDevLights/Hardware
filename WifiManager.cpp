@@ -3,6 +3,7 @@
 void WifiManager::connect(String ssid, String password)
 {
     WiFi.begin(ssid, password);
+    WiFi.softAPdisconnect(true);
     while (WiFi.status() != WL_CONNECTED)
     {
         delay(500);
