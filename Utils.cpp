@@ -22,13 +22,13 @@ StripPattern Utils::generatePattern(String patternString, JsonArray colorArray, 
     {
         pattern.pattern = 3;
     }
+    if (patternString == "runner")
+    {
+        pattern.pattern = 4;
+    }
     for (int i = 0; i < 10; i++)
     {
-        StringSplitter *splitter = new StringSplitter(colorArray[i], '.', 3);
-        pattern.colors[i].r = splitter->getItemAtIndex(0).toInt();
-        pattern.colors[i].g = splitter->getItemAtIndex(1).toInt();
-        pattern.colors[i].b = splitter->getItemAtIndex(2).toInt();
-        delete splitter;
+        pattern.colors[i] = generateColor(colorArray[i]);
     }
     pattern.timeout = timeout;
     return pattern;

@@ -24,6 +24,7 @@ public:
 private:
     void showGradient(RGB first, RGB second);
     void fadeUpdate();
+    void runnerUpdate();
     void setNewGoal();
     void fadeToColor(RGB color);
 };

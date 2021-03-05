@@ -12,6 +12,8 @@ clock_prescale_set(clock_div_1);
 int activePattern;
 StripPattern currentPattern;
 RGB currentColor;
+int currentStartLed;
+int currrentDirectionRight;
 RGB goalColor;
 unsigned long lastUpdate;
 
@@ -28,7 +30,8 @@ void Strip::update()
     case 2:
         fadeUpdate();
         break;
-
+    case 4:
+        runnerUpdate();
     default:
         break;
     }
@@ -41,28 +44,31 @@ void Strip::showPattern(StripPattern pattern)
      * plain: 1
      * fading: 2
      * gradient: 3
+     * runner: 4
      *
      */
+    Serial.println(pattern.toString());
     currentPattern = pattern;
     activePattern = pattern.pattern;
-    if (pattern.pattern == 1)
+    switch (pattern.pattern)
     {
+    case 1:
         fadeToColor(pattern.colors[0]);
         Storage::setStripPattern(pattern);
-    }
-    else if (pattern.pattern == 2)
-    {
+        break;
+    case 4:
+        Storage::setStripPattern(pattern);
+        currentColor = Storage::getStripPattern().colors[0];
+        break;
+    case 2:
         currentColor = Storage::getStripPattern().colors[0];
         Storage::setStripPattern(pattern);
         goalColor = RGB({255, 0, 0});
-    }
-    else if (pattern.pattern == 3)
-    {
+    case 3:
         Storage::setStripPattern(pattern);
         showGradient(pattern.colors[0], pattern.colors[1]);
-    }
-    else
-    {
+    default:
+        break;
     }
 }
 
@@ -208,6 +214,41 @@ void Strip::fadeUpdate()
     }
 }
 
+void Strip::runnerUpdate()
+{
+    unsigned long currentMillis = millis();
+    if (currentMillis - lastUpdate > currentPattern.timeout)
+    {
+        lastUpdate = currentMillis;
+        const int count = Storage::getCount();
+        const int leds = round(count / 20);
+        pixels.clear();
+        Serial.println(currentStartLed);
+        for (int i = currentStartLed; i < currentStartLed + leds; i++)
+        {
+            pixels.setPixelColor(i, currentColor.r, currentColor.g, currentColor.b);
+        }
+        pixels.show();
+        if (currrentDirectionRight)
+        {
+            currentStartLed++;
+            if (currentStartLed > count)
+            {
+                currentStartLed--;
+                currrentDirectionRight = false;
+            }
+        }
+        else
+        {
+            currentStartLed--;
+            if (currentStartLed < 0)
+            {
+                currentStartLed++;
+                currrentDirectionRight = true;
+            }
+        }
+    }
+}
 void Strip::setNewGoal()
 {
     if (currentColor == goalColor)
