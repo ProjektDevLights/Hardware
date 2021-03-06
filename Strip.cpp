@@ -37,6 +37,11 @@ void Strip::update()
     }
 }
 
+void Strip::stopRunning()
+{
+    activePattern = -1;
+}
+
 void Strip::showPattern(StripPattern pattern)
 {
     /**

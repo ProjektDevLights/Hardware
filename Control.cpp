@@ -37,6 +37,7 @@ void Control::loop()
         if (command == "off")
         {
             Storage::setIsOn(false);
+            strip.stopRunning();
             strip.clear();
         }
         if (command == "on")

@@ -20,6 +20,7 @@ public:
     void setBrightness(int brightness);
     void showColor(RGB color);
     void update();
+    void stopRunning();
 
 private:
     void showGradient(RGB first, RGB second);
