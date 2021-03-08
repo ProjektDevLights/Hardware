@@ -47,8 +47,8 @@ void Control::loop()
         }
         if (command == "brightness")
         {
-            Storage::setBrightness((int)data["data"]);
             strip.setBrightness((int)data["data"]);
+            Storage::setBrightness((int)data["data"]);
         }
         if (command == "restart")
         {

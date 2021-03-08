@@ -108,10 +108,33 @@ void Strip::clear()
     pixels.show();
 }
 
-void Strip::setBrightness(int brightness)
+boolean brightnessEnd(int bF, int b, int i)
 {
-    pixels.setBrightness(brightness);
-    pixels.show();
+    if (bF < b)
+    {
+        return i < b;
+    }
+    else
+    {
+        return i > b;
+    }
+}
+
+void Strip::setBrightness(int b)
+{
+    int bF = Storage::getBrightness();
+
+    int factor = bF < b ? 1 : -1;
+    unsigned long t1 = millis();
+
+    for (int i = bF; brightnessEnd(bF, b, i); i += factor * 15)
+    {
+        pixels.setBrightness(i);
+        pixels.show();
+        yield();
+    }
+    unsigned long t2 = millis();
+    Serial.println(t2 - t1);
 }
 
 //private
