@@ -38,12 +38,13 @@ void Control::loop()
         {
             Storage::setIsOn(false);
             strip.stopRunning();
+            strip.fadeToColor(Storage::getStripPattern().colors[0], RGB({0, 0, 0}));
             strip.clear();
         }
         if (command == "on")
         {
             Storage::setIsOn(true);
-            strip.showPattern(Storage::getStripPattern());
+            strip.fadeToColor(RGB({0, 0, 0}), Storage::getStripPattern().colors[0]);
         }
         if (command == "brightness")
         {

@@ -166,6 +166,30 @@ void Strip::fadeToColor(RGB color)
     }
 }
 
+/**
+ * should just be used for on/off
+ * 
+ * 
+ * 
+ */
+[[deprecated("should just be used for on/off!")]] void Strip::fadeToColor(RGB oldColor, RGB color)
+{
+    const int time = 7;
+    int rStep = Utils::generateStep(oldColor.r, color.r, time);
+    int gStep = Utils::generateStep(oldColor.g, color.g, time);
+    int bStep = Utils::generateStep(oldColor.b, color.b, time);
+
+    for (int i = 0; i < time; i++)
+    {
+
+        oldColor.r = oldColor.r - rStep;
+        oldColor.g = oldColor.g - gStep;
+        oldColor.b = oldColor.b - bStep;
+        showColor(oldColor);
+        yield();
+    }
+}
+
 void Strip::showGradient(RGB first, RGB second)
 {
     int count = Storage::getCount();

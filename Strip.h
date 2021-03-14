@@ -21,6 +21,7 @@ public:
     void showColor(RGB color);
     void update();
     void stopRunning();
+    void fadeToColor(RGB oldColor, RGB color);
 
 private:
     void showGradient(RGB first, RGB second);
