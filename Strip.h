@@ -15,7 +15,7 @@ public:
     Strip();
     bool setLength(int length, std::function<void()> callback);
     bool setLength(int length);
-    void showPattern(StripPattern pattern);
+    void showPattern(StripPattern pattern, boolean noFade = false);
     void clear();
     void setBrightness(int brightness);
     void showColor(RGB color);
@@ -29,5 +29,6 @@ private:
     void runnerUpdate();
     void setNewGoal();
     void fadeToColor(RGB color);
+    uint32_t generateColor(int r, int g, int b);
 };
 #endif

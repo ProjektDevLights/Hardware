@@ -16,6 +16,8 @@ int currentStartLed;
 int currrentDirectionRight;
 RGB goalColor;
 unsigned long lastUpdate;
+int brightness;
+int length = 150;
 
 Adafruit_NeoPixel pixels(1000, PIN, PIXELFORMAT);
 Strip::Strip()
@@ -42,7 +44,7 @@ void Strip::stopRunning()
     activePattern = -1;
 }
 
-void Strip::showPattern(StripPattern pattern)
+void Strip::showPattern(StripPattern pattern, boolean noFade)
 {
     /**
      * Patterns:
@@ -52,26 +54,40 @@ void Strip::showPattern(StripPattern pattern)
      * runner: 4
      *
      */
-    Serial.println(pattern.toString());
     currentPattern = pattern;
     activePattern = pattern.pattern;
     switch (pattern.pattern)
     {
     case 1:
-        fadeToColor(pattern.colors[0]);
+        if (noFade)
+        {
+            Serial.println("no fade");
+            showColor(pattern.colors[0]);
+        }
+        else
+        {
+            Serial.println("fade");
+            unsigned long t1 = millis();
+            fadeToColor(pattern.colors[0]);
+            unsigned long t2 = millis();
+            Serial.println(t2 - t1);
+        }
+
         Storage::setStripPattern(pattern);
-        break;
-    case 4:
-        Storage::setStripPattern(pattern);
-        currentColor = Storage::getStripPattern().colors[0];
         break;
     case 2:
         currentColor = Storage::getStripPattern().colors[0];
         Storage::setStripPattern(pattern);
         goalColor = RGB({255, 0, 0});
+        break;
     case 3:
         Storage::setStripPattern(pattern);
         showGradient(pattern.colors[0], pattern.colors[1]);
+        break;
+    case 4:
+        Storage::setStripPattern(pattern);
+        currentColor = Storage::getStripPattern().colors[0];
+        break;
     default:
         break;
     }
@@ -87,16 +103,19 @@ bool Strip::setLength(int length, std::function<void()> callback)
     return false;
 }
 
-bool Strip::setLength(int length)
+bool Strip::setLength(int pLength)
 {
     if (length >= 0)
     {
-        Storage::setCount(length);
+        Storage::setCount(pLength);
         pixels.clear();
         pixels.show();
         delay(10);
-        pixels.updateLength(length);
+        pixels.updateLength(pLength);
+        length = pLength;
         delay(10);
+        Serial.print("lenght update: ");
+        Serial.print(length);
         return true;
     }
     return false;
@@ -108,6 +127,11 @@ void Strip::clear()
     pixels.show();
 }
 
+/**
+ *@param bf Brightness before fading 
+ *@param b Brghtness after fading
+ *@param i current brightness
+ */
 boolean brightnessEnd(int bF, int b, int i)
 {
     if (bF < b)
@@ -122,19 +146,18 @@ boolean brightnessEnd(int bF, int b, int i)
 
 void Strip::setBrightness(int b)
 {
+    int runs = 30;
     int bF = Storage::getBrightness();
+    int difference = b - bF;
+    int step = Utils::stepRound(difference / runs);
 
-    int factor = bF < b ? 1 : -1;
-    unsigned long t1 = millis();
-
-    for (int i = bF; brightnessEnd(bF, b, i); i += factor * 15)
+    for (int i = 0; i < runs; i++)
     {
-        pixels.setBrightness(i);
-        pixels.show();
+        brightness += step;
+        showPattern(currentPattern, true);
         yield();
     }
-    unsigned long t2 = millis();
-    Serial.println(t2 - t1);
+    brightness = b;
 }
 
 //private
@@ -142,22 +165,22 @@ void Strip::setBrightness(int b)
 void Strip::showColor(RGB color)
 {
     pixels.clear();
-    pixels.fill(pixels.Color(color.r, color.g, color.b), 0, 96);
+    pixels.fill(generateColor(color.r, color.g, color.b), 0, length);
     delay(1);
     pixels.show();
 }
 
 void Strip::fadeToColor(RGB color)
 {
-    const int time = 7;
+    const int time = 40;
     RGB oldColor = Storage::getStripPattern().colors[0];
+
     int rStep = Utils::generateStep(oldColor.r, color.r, time);
     int gStep = Utils::generateStep(oldColor.g, color.g, time);
     int bStep = Utils::generateStep(oldColor.b, color.b, time);
 
     for (int i = 0; i < time; i++)
     {
-
         oldColor.r = oldColor.r - rStep;
         oldColor.g = oldColor.g - gStep;
         oldColor.b = oldColor.b - bStep;
@@ -172,9 +195,9 @@ void Strip::fadeToColor(RGB color)
  * 
  * 
  */
-[[deprecated("should just be used for on/off!")]] void Strip::fadeToColor(RGB oldColor, RGB color)
+void Strip::fadeToColor(RGB oldColor, RGB color)
 {
-    const int time = 7;
+    const int time = 40;
     int rStep = Utils::generateStep(oldColor.r, color.r, time);
     int gStep = Utils::generateStep(oldColor.g, color.g, time);
     int bStep = Utils::generateStep(oldColor.b, color.b, time);
@@ -188,6 +211,11 @@ void Strip::fadeToColor(RGB color)
         showColor(oldColor);
         yield();
     }
+}
+
+uint32_t Strip::generateColor(int r, int g, int b)
+{
+    return pixels.Color((r * brightness / 255), (g * brightness / 255), (b * brightness / 255));
 }
 
 void Strip::showGradient(RGB first, RGB second)
@@ -222,7 +250,7 @@ void Strip::showGradient(RGB first, RGB second)
         //Serial.println(b);
         //-----debug----
 
-        pixels.setPixelColor(i, r, g, b);
+        pixels.setPixelColor(i, generateColor(r, g, b));
     }
     pixels.show();
 }
@@ -275,10 +303,9 @@ void Strip::runnerUpdate()
         const int count = Storage::getCount();
         const int leds = round(count / 20);
         pixels.clear();
-        Serial.println(currentStartLed);
         for (int i = currentStartLed; i < currentStartLed + leds; i++)
         {
-            pixels.setPixelColor(i, currentColor.r, currentColor.g, currentColor.b);
+            pixels.setPixelColor(i, generateColor(currentColor.r, currentColor.g, currentColor.b));
         }
         pixels.show();
         if (currrentDirectionRight)

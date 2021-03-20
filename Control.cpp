@@ -148,6 +148,7 @@ String Control::readData()
 void Control::initStrip()
 {
 
+    strip.setLength(Storage::getCount());
     strip.setBrightness(Storage::getBrightness());
     if (Storage::getIsOn())
     {
