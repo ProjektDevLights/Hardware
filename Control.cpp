@@ -78,7 +78,7 @@ void Control::loop()
             RGB color = Utils::generateColor(data["data"]["color"]);
             strip.showColor(color);
             delay(int(data["data"]["time"]));
-            initStrip();
+            initStrip(true);
         }
         /*         if (command == "rainbow")
         {
@@ -145,14 +145,24 @@ String Control::readData()
     digitalWrite(LED_BUILTIN, HIGH); */
     return readString;
 }
-void Control::initStrip()
+/**
+ * 
+ * @param light when light mode is true length and brightnes dont get reset and no fade is happening
+ * 
+ * 
+ * 
+ */
+void Control::initStrip(boolean light)
 {
 
-    strip.setLength(Storage::getCount());
-    strip.setBrightness(Storage::getBrightness());
+    if (!light)
+    {
+        strip.setLength(Storage::getCount());
+        strip.setBrightness(Storage::getBrightness());
+    }
     if (Storage::getIsOn())
     {
         StripPattern pattern = Storage::getStripPattern();
-        strip.showPattern(pattern);
+        strip.showPattern(pattern, light);
     }
 }

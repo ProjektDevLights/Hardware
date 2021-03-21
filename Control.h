@@ -18,7 +18,7 @@ private:
     DynamicJsonDocument stringToJSON(String raw);
     void fading(int delay);
     void fadeTo(RGB color, int timeout);
-    void initStrip();
+    void initStrip(boolean light = false);
 };
 
 #endif
