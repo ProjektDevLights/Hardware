@@ -61,16 +61,11 @@ void Strip::showPattern(StripPattern pattern, boolean noFade)
     case 1:
         if (noFade)
         {
-            Serial.println("no fade");
             showColor(pattern.colors[0]);
         }
         else
         {
-            Serial.println("fade");
-            unsigned long t1 = millis();
             fadeToColor(pattern.colors[0]);
-            unsigned long t2 = millis();
-            Serial.println(t2 - t1);
         }
 
         Storage::setStripPattern(pattern);

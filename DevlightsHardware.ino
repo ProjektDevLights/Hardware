@@ -8,5 +8,11 @@ void setup()
 Control control;
 void loop()
 {
+    unsigned long t1 = millis();
     control.loop();
+    unsigned long t2 = millis();
+    if (t2 - t1 > 20)
+    {
+        Serial.println(t2 - t1);
+    }
 }

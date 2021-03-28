@@ -32,7 +32,10 @@ void Control::loop()
         if (command == "leds")
         {
             StripPattern pattern = Utils::generatePattern(data["data"]["pattern"], data["data"]["colors"], data["data"]["timeout"]);
-            strip.showPattern(pattern);
+            bool noFade = (bool)data["data"]["noFade"];
+            // const bool noFade = noFadeJson.is<bool>();
+            Serial.println(noFade);
+            strip.showPattern(pattern, noFade);
         }
         if (command == "off")
         {
@@ -80,31 +83,7 @@ void Control::loop()
             delay(int(data["data"]["time"]));
             initStrip(true);
         }
-        /*         if (command == "rainbow")
-        {
-            while (true)
-            {
-                // millis
-                strip.showColor({255, 0, 0});
-                delay(1000);
-                strip.showColor({255, 255, 0});
-                delay(1000);
-                strip.showColor({0, 255, 0});
-                delay(1000);
-                strip.showColor({0, 255, 255});
-                delay(1000);
-                strip.showColor({0, 0, 255});
-                delay(1000);
-                strip.showColor({255, 0, 255});
-                delay(1000);
-            }
-        } */
     }
-
-    /*     DynamicJsonDocument *ptrData = &data;
-    String *ptrCommand = &command;
-    delete ptrData;
-    delete ptrCommand; */
 }
 
 String Control::readData()
