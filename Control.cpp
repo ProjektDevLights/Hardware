@@ -10,7 +10,7 @@ void Control::loop()
 {
     if (first)
     {
-        client.connect("192.168.188.62", 2389);
+        client.connect("devlight.local", 2389);
         first = false;
         initStrip();
     }
@@ -34,7 +34,6 @@ void Control::loop()
             StripPattern pattern = Utils::generatePattern(data["data"]["pattern"], data["data"]["colors"], data["data"]["timeout"]);
             bool noFade = (bool)data["data"]["noFade"];
             // const bool noFade = noFadeJson.is<bool>();
-            Serial.println(noFade);
             strip.showPattern(pattern, noFade);
         }
         if (command == "off")
@@ -82,6 +81,10 @@ void Control::loop()
             strip.showColor(color);
             delay(int(data["data"]["time"]));
             initStrip(true);
+        }
+        if (command == "logStorage")
+        {
+            Storage::print();
         }
     }
 }

@@ -31,7 +31,7 @@ void Setup::first()
 {
     Serial.println("first");
     WiFiClient c;
-    HttpClient client(c, "192.168.188.62", 80);
+    HttpClient client(c, "devlight.local", 80);
     int err = 0;
     String request = "/esp/setup?ip=";
     request += Utils::ipToString(WifiManager::getIp());
@@ -65,12 +65,12 @@ void Setup::first()
                 Storage::setId(response);
                 Storage::setIp(WifiManager::getIp());
                 Storage::setIsSetup(true);
-                strip.setLength(150);
+                Storage::setCount(150);
+                Storage::setBrightness(255);
+                Storage::setIsOn(true);
                 StripPattern startup;
                 startup.colors[0] = {0, 255, 106};
                 startup.pattern = 1;
-                Storage::setCount(0);
-                strip.showPattern(startup);
                 Storage::setStripPattern(startup);
             }
         }
@@ -89,8 +89,9 @@ void Setup::restart()
     Serial.println("restart");
     if (Utils::ipToString(Storage::getIp()) != Utils::ipToString(WifiManager::getIp()))
     {
+        Serial.println("ipchange");
         WiFiClient c;
-        HttpClient client(c, "192.168.188.62", 80);
+        HttpClient client(c, "devlight.local", 80);
         int err = 0;
         //TODO save and read id
         String id = Storage::getId();

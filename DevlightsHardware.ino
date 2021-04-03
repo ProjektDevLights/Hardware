@@ -13,6 +13,7 @@ void loop()
     unsigned long t2 = millis();
     if (t2 - t1 > 20)
     {
+        Serial.print("loop time: ");
         Serial.println(t2 - t1);
     }
 }

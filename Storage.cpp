@@ -181,7 +181,7 @@ void Storage::print()
     for (int i = 0; i < 0x2b; i++)
     {
         Serial.print("Add ");
-        Serial.print(i);
+        Serial.print(i, HEX);
         Serial.print(": ");
         Serial.println(EEPROM.read(i));
     }

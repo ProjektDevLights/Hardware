@@ -109,8 +109,6 @@ bool Strip::setLength(int pLength)
         pixels.updateLength(pLength);
         length = pLength;
         delay(10);
-        Serial.print("lenght update: ");
-        Serial.print(length);
         return true;
     }
     return false;
@@ -120,23 +118,6 @@ void Strip::clear()
 {
     pixels.clear();
     pixels.show();
-}
-
-/**
- *@param bf Brightness before fading 
- *@param b Brghtness after fading
- *@param i current brightness
- */
-boolean brightnessEnd(int bF, int b, int i)
-{
-    if (bF < b)
-    {
-        return i < b;
-    }
-    else
-    {
-        return i > b;
-    }
 }
 
 void Strip::setBrightness(int b)
@@ -153,6 +134,7 @@ void Strip::setBrightness(int b)
         yield();
     }
     brightness = b;
+    Storage::setBrightness(b);
 }
 
 //private
