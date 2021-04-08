@@ -22,11 +22,13 @@ public:
     void update();
     void stopRunning();
     void fadeToColor(RGB oldColor, RGB color);
+    void showCustom(JsonArray colors);
 
 private:
     void showGradient(RGB first, RGB second);
     void fadeUpdate();
     void runnerUpdate();
+    void rainbowUpdate();
     void setNewGoal();
     void fadeToColor(RGB color);
     uint32_t generateColor(int r, int g, int b);

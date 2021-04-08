@@ -34,6 +34,10 @@ void Strip::update()
         break;
     case 4:
         runnerUpdate();
+        break;
+    case 5:
+        rainbowUpdate();
+        break;
     default:
         break;
     }
@@ -52,7 +56,7 @@ void Strip::showPattern(StripPattern pattern, boolean noFade)
      * fading: 2
      * gradient: 3
      * runner: 4
-     *
+     * rainbow: 5 
      */
     currentPattern = pattern;
     activePattern = pattern.pattern;
@@ -70,6 +74,7 @@ void Strip::showPattern(StripPattern pattern, boolean noFade)
 
         Storage::setStripPattern(pattern);
         break;
+    case 5:
     case 2:
         currentColor = Storage::getStripPattern().colors[0];
         Storage::setStripPattern(pattern);
@@ -168,9 +173,6 @@ void Strip::fadeToColor(RGB color)
 
 /**
  * should just be used for on/off
- * 
- * 
- * 
  */
 void Strip::fadeToColor(RGB oldColor, RGB color)
 {
@@ -232,6 +234,19 @@ void Strip::showGradient(RGB first, RGB second)
     pixels.show();
 }
 
+void Strip::showCustom(JsonArray colors)
+{
+    pixels.clear();
+    Serial.println(colors.size());
+    for (int i = 0; i < colors.size(); i++)
+    {
+        RGB color = Utils::generateColor(colors.getElement(i));
+        Serial.println(color.toString());
+        pixels.setPixelColor(i, generateColor(color.r, color.g, color.b));
+    }
+    pixels.show();
+}
+
 void Strip::fadeUpdate()
 {
 
@@ -239,7 +254,6 @@ void Strip::fadeUpdate()
 
     if (currentMillis - lastUpdate > currentPattern.timeout)
     {
-        setNewGoal();
         lastUpdate = currentMillis;
 
         int r = currentColor.r;
@@ -267,7 +281,12 @@ void Strip::fadeUpdate()
         showColor({r, g, b});
         currentColor = RGB({r, g, b});
         currentPattern.colors[0] = RGB({r, g, b});
-        Storage::setStripPattern(currentPattern);
+
+        if (currentColor == goalColor)
+        {
+            setNewGoal();
+            Storage::setStripPattern(currentPattern);
+        }
     }
 }
 
@@ -333,5 +352,23 @@ void Strip::setNewGoal()
         {
             goalColor = RGB({255, 0, 0});
         }
+    }
+    else
+    {
+        return;
+    }
+}
+
+void Strip::rainbowUpdate()
+{
+
+    unsigned long currentMillis = millis();
+    if (currentMillis - lastUpdate > currentPattern.timeout)
+    {
+        lastUpdate = currentMillis;
+        pixels.fill(generateColor(currentColor.r, currentColor.g, currentColor.b), 0, length);
+        pixels.show();
+        currentColor = goalColor;
+        setNewGoal();
     }
 }

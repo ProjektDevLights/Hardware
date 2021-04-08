@@ -16,6 +16,7 @@ public:
     static StripPattern getStripPattern();
     static bool getIsOn();
     static int getBrightness();
+    static bool getIsCustom();
     static void setIsSetup(bool isSetup);
     static void setId(String id);
     static void setIp(IPAddress ip);
@@ -23,6 +24,7 @@ public:
     static void setStripPattern(StripPattern color);
     static void setIsOn(bool isOn);
     static void setBrightness(int brightness);
+    static void setIsCustom(bool isCustom);
     static void clear();
     static void print();
 
@@ -36,5 +38,6 @@ private:
     static const int add_color = 0x09;      // length: 3*10 = 30
     static const int add_pattern = 0x28;    //length: 1
     static const int add_timeout = 0x29;
+    static const int add_custom = 0xf0;
 };
 #endif

@@ -14,6 +14,7 @@ class Utils
 public:
     static String ipToString(IPAddress ip);
     static StripPattern generatePattern(String pattern, JsonArray colorArray, int timeout);
+    static String generatePatternString(int patternNr);
     static RGB generateColor(String color);
     static DynamicJsonDocument stringToJSON(String raw);
     static int stepRound(float number);

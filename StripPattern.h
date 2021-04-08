@@ -11,6 +11,7 @@ struct StripPattern
      * fading: 2
      * gradient: 3
      * runner: 4
+     * rainbow: 5
      *
      */
     int pattern;

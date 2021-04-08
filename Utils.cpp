@@ -26,12 +26,35 @@ StripPattern Utils::generatePattern(String patternString, JsonArray colorArray, 
     {
         pattern.pattern = 4;
     }
+    if (patternString == "rainbow")
+    {
+        pattern.pattern = 5;
+    }
     for (int i = 0; i < 10; i++)
     {
         pattern.colors[i] = generateColor(colorArray[i]);
     }
     pattern.timeout = timeout;
     return pattern;
+}
+
+String Utils::generatePatternString(int patternNr)
+{
+    switch (patternNr)
+    {
+    case 1:
+        return "plain";
+    case 2:
+        return "fading";
+    case 3:
+        return "gradient";
+    case 4:
+        return "runner";
+    case 5:
+        return "rainbow";
+    default:
+        return "error";
+    }
 }
 
 RGB Utils::generateColor(String colorString)

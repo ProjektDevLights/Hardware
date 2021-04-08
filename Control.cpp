@@ -12,6 +12,9 @@ void Control::loop()
     {
         client.connect("devlight.local", 2389);
         first = false;
+
+        sendPattern();
+
         initStrip();
     }
 
@@ -86,6 +89,19 @@ void Control::loop()
         {
             Storage::print();
         }
+        if (command == "custom")
+        {
+            strip.stopRunning();
+            Storage::setIsCustom(true);
+            JsonArray array = data["data"];
+            strip.showCustom(array);
+            serializeJsonPretty(array, Serial);
+        }
+        else if (command != "logStorage")
+        {
+            Storage::setIsCustom(false);
+            sendPattern();
+        }
     }
 }
 
@@ -118,7 +134,6 @@ String Control::readData()
     if (readString != "")
     {
         Serial.println(readString);
-        client.println("Ending connection\n");
     }
 
     //  indicate incomming data (debug);
@@ -147,4 +162,25 @@ void Control::initStrip(boolean light)
         StripPattern pattern = Storage::getStripPattern();
         strip.showPattern(pattern, light);
     }
+}
+
+void Control::sendPattern()
+{
+    DynamicJsonDocument jsonDoc(512);
+    DynamicJsonDocument arrayDoc(512);
+    JsonArray colors = arrayDoc.to<JsonArray>();
+    StripPattern pattern = Storage::getStripPattern();
+    jsonDoc["pattern"] = Utils::generatePatternString(pattern.pattern);
+    if (pattern.timeout > 0)
+    {
+        jsonDoc["timeout"] = pattern.timeout;
+    }
+    for (RGB color : pattern.colors)
+    {
+        colors.add(color.toString());
+    }
+    jsonDoc["colors"] = colors;
+    String jsonString;
+    serializeJson(jsonDoc, jsonString);
+    client.print(jsonString);
 }

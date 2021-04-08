@@ -167,6 +167,24 @@ int Storage::getBrightness()
     return EEPROM.read(add_brightness);
 }
 
+void Storage::setIsCustom(bool isCustom)
+{
+    if (isCustom)
+    {
+        EEPROM.write(add_custom, 1);
+    }
+    else
+    {
+        EEPROM.write(add_custom, 0);
+    }
+}
+
+bool Storage::getIsCustom()
+{
+    int custom = EEPROM.read(add_custom);
+    return custom == 1;
+}
+
 void Storage::clear()
 {
     for (int i = 0; i < 512; i++)
@@ -178,7 +196,7 @@ void Storage::clear()
 
 void Storage::print()
 {
-    for (int i = 0; i < 0x2b; i++)
+    for (int i = 0; i < 0x01ff; i++)
     {
         Serial.print("Add ");
         Serial.print(i, HEX);

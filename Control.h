@@ -19,6 +19,7 @@ private:
     void fading(int delay);
     void fadeTo(RGB color, int timeout);
     void initStrip(boolean light = false);
+    void sendPattern();
 };
 
 #endif

@@ -69,7 +69,7 @@ void Setup::first()
                 Storage::setBrightness(255);
                 Storage::setIsOn(true);
                 StripPattern startup;
-                startup.colors[0] = {0, 255, 106};
+                startup.colors[0] = {29, 233, 182};
                 startup.pattern = 1;
                 Storage::setStripPattern(startup);
             }
