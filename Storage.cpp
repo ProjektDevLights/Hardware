@@ -177,6 +177,7 @@ void Storage::setIsCustom(bool isCustom)
     {
         EEPROM.write(add_custom, 0);
     }
+    EEPROM.commit();
 }
 
 bool Storage::getIsCustom()
