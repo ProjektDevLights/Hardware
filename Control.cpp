@@ -13,7 +13,10 @@ void Control::loop()
         client.connect("devlight.local", 2389);
         first = false;
 
-        sendPattern();
+        if (Storage::getIsCustom())
+        {
+            sendPattern();
+        }
 
         initStrip();
     }
@@ -97,11 +100,11 @@ void Control::loop()
             strip.showCustom(array);
             serializeJsonPretty(array, Serial);
         }
-        else if (command != "logStorage")
+        /* else if (command != "logStorage")
         {
             Storage::setIsCustom(false);
             sendPattern();
-        }
+        } */
     }
 }
 
