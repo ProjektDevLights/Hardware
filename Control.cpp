@@ -100,11 +100,11 @@ void Control::loop()
             strip.showCustom(array);
             serializeJsonPretty(array, Serial);
         }
-        /* else if (command != "logStorage")
+        else if (command != "logStorage")
         {
             Storage::setIsCustom(false);
             sendPattern();
-        } */
+        }
     }
 }
 
