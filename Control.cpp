@@ -171,7 +171,6 @@ void Control::initStrip(boolean light)
     if (Storage::getIsOn())
     {
         StripPattern pattern = Storage::getStripPattern();
-        Serial.println(pattern.toString());
         strip.showPattern(pattern, light);
     }
 }
