@@ -23,6 +23,7 @@ public:
     void stopRunning();
     void fadeToColor(RGB oldColor, RGB color);
     void showCustom(JsonArray colors);
+    void fadeOff();
 
 private:
     void showGradient(RGB first, RGB second);
@@ -32,5 +33,7 @@ private:
     void setNewGoal();
     void fadeToColor(RGB color);
     uint32_t generateColor(int r, int g, int b);
+    uint32_t generateColor(RGB color);
+    RGB pixelColorToRGB(uint32_t color);
 };
 #endif

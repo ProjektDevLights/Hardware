@@ -46,13 +46,21 @@ void Control::loop()
         {
             Storage::setIsOn(false);
             strip.stopRunning();
-            strip.fadeToColor(Storage::getStripPattern().colors[0], RGB({0, 0, 0}));
-            strip.clear();
+            //strip.fadeToColor(Storage::getStripPattern().colors[0], RGB({0, 0, 0}));
+            //strip.clear();
+            strip.fadeOff();
         }
         if (command == "on")
         {
             Storage::setIsOn(true);
-            strip.fadeToColor(RGB({0, 0, 0}), Storage::getStripPattern().colors[0]);
+            if (Storage::getStripPattern().pattern == 1)
+            {
+                strip.fadeToColor(RGB({0, 0, 0}), Storage::getStripPattern().colors[0]);
+            }
+            else
+            {
+                initStrip(true);
+            }
         }
         if (command == "brightness")
         {
@@ -163,6 +171,7 @@ void Control::initStrip(boolean light)
     if (Storage::getIsOn())
     {
         StripPattern pattern = Storage::getStripPattern();
+        Serial.println(pattern.toString());
         strip.showPattern(pattern, light);
     }
 }

@@ -6,7 +6,7 @@ void Setup::run()
 {
     init();
     digitalWrite(LED_BUILTIN, LOW);
-    WifiManager::connect("devlight", "HatJaNur5StundenGedauert");
+    WifiManager::connect("AnGeTiNet", "SchwarzWaelderKirschTorte2017");
     if (Storage::getIsSetup())
     {
         restart();

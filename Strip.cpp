@@ -169,10 +169,11 @@ void Strip::fadeToColor(RGB color)
         showColor(oldColor);
         yield();
     }
+    showColor(color);
 }
 
 /**
- * should just be used for on/off
+ * should just be used for on
  */
 void Strip::fadeToColor(RGB oldColor, RGB color)
 {
@@ -197,12 +198,62 @@ uint32_t Strip::generateColor(int r, int g, int b)
     return pixels.Color((r * brightness / 255), (g * brightness / 255), (b * brightness / 255));
 }
 
+uint32_t Strip::generateColor(RGB color)
+{
+    return generateColor(color.r, color.g, color.b);
+}
+
+void Strip::fadeOff()
+{
+    RGB oldColors[length];
+    int rSteps[length];
+    int gSteps[length];
+    int bSteps[length];
+    const int time = 40;
+    for (int i = 0; i < length; i++)
+    {
+        RGB color = pixelColorToRGB(pixels.getPixelColor(i));
+        oldColors[i] = color;
+        rSteps[i] = Utils::generateStep(color.r, 0, time);
+        gSteps[i] = Utils::generateStep(color.g, 0, time);
+        bSteps[i] = Utils::generateStep(color.b, 0, time);
+    }
+
+    for (int i = 0; i < time; i++)
+    {
+        for (int i = 0; i < length; i++)
+        {
+
+            RGB oldColor = oldColors[i];
+            // RGB color = RGB({oldColor.r, oldColor.g, oldColor.b})
+            oldColor.r = oldColor.r - rSteps[i];
+            oldColor.g = oldColor.g - gSteps[i];
+            oldColor.b = oldColor.b - bSteps[i];
+            oldColors[i] = oldColor;
+            pixels.setPixelColor(i, generateColor(oldColor));
+            yield();
+        }
+        pixels.show();
+        yield();
+    }
+    pixels.clear();
+    pixels.show();
+}
+
+RGB Strip::pixelColorToRGB(uint32_t color)
+{
+    uint8_t r = color >> 16;
+    uint8_t g = color >> 8;
+    uint8_t b = color;
+
+    return RGB({r, g, b});
+}
+
 void Strip::showGradient(RGB first, RGB second)
 {
-    int count = Storage::getCount();
-    float difR = (float)(first.r - second.r) / (float)count;
-    float difG = (float)(first.g - second.g) / (float)count;
-    float difB = (float)(first.b - second.b) / (float)count;
+    float difR = (float)(first.r - second.r) / (float)length;
+    float difG = (float)(first.g - second.g) / (float)length;
+    float difB = (float)(first.b - second.b) / (float)length;
 
     int rStep = -Utils::stepRound(difR); // 255 - 0 /15
     int gStep = -Utils::stepRound(difG);
@@ -211,7 +262,7 @@ void Strip::showGradient(RGB first, RGB second)
     int r = first.r;
     int g = first.g;
     int b = first.b;
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < length; i++)
     {
         int goalR = r + rStep;
         int goalG = g + gStep;
