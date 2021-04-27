@@ -97,3 +97,16 @@ int Utils::stepRound(float number)
     return number == 0 ? 0 : number < 0 ? floor(number)
                                         : ceil(number);
 }
+
+std::vector<RGB> Utils::generatePixels(int length, StripPattern pattern, int startIndex)
+{
+    std::vector<RGB> arr;
+    arr.resize(length);
+    std::vector<RGB>::iterator it;
+    it = arr.begin();
+    for (int i = 0; i < length; i++)
+    {
+        arr[i] = pattern.colors[0];
+    }
+    return arr;
+}

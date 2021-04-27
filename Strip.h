@@ -17,7 +17,7 @@ public:
     bool setLength(int length);
     void showPattern(StripPattern pattern, boolean noFade = false);
     void clear();
-    void setBrightness(int brightness);
+    void setBrightness(int brightness, boolean silent = false);
     void showColor(RGB color);
     void update();
     void stopRunning();
@@ -26,6 +26,7 @@ public:
     void fadeOff();
 
 private:
+    void fadeToPixelArray(std::vector<RGB> arr);
     void showGradient(RGB first, RGB second);
     void fadeUpdate();
     void runnerUpdate();

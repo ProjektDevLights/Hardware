@@ -162,11 +162,10 @@ String Control::readData()
  */
 void Control::initStrip(boolean light)
 {
-
     if (!light)
     {
         strip.setLength(Storage::getCount());
-        strip.setBrightness(Storage::getBrightness());
+        strip.setBrightness(Storage::getBrightness(), true);
     }
     if (Storage::getIsOn())
     {

@@ -60,16 +60,25 @@ void Strip::showPattern(StripPattern pattern, boolean noFade)
      */
     currentPattern = pattern;
     activePattern = pattern.pattern;
+
+    RGB pixelColors[length];
+    Serial.println(pattern.toString());
+    std::vector<RGB> colors = Utils::generatePixels(length, pattern);
+    fadeToPixelArray(colors);
+    //fadeToPixelArray(pixelColors);
     switch (pattern.pattern)
     {
     case 1:
         if (noFade)
         {
+            Serial.println("test");
             showColor(pattern.colors[0]);
         }
         else
         {
-            fadeToColor(pattern.colors[0]);
+            Serial.println("test");
+
+            fadeToPixelArray(colors);
         }
 
         Storage::setStripPattern(pattern);
@@ -93,6 +102,46 @@ void Strip::showPattern(StripPattern pattern, boolean noFade)
     }
 }
 
+void Strip::fadeToPixelArray(std::vector<RGB> arr)
+{
+    std::vector<RGB> oldColors;
+    oldColors.resize(arr.size());
+    int rSteps[length];
+    int gSteps[length];
+    int bSteps[length];
+
+    for (int i = 0; i < length; i++)
+    {
+        RGB oldColor = pixelColorToRGB(pixels.getPixelColor(i));
+        oldColors[i] = oldColor;
+        rSteps[i] = Utils::generateStep(oldColor.r, arr[i].r, 40);
+        gSteps[i] = Utils::generateStep(oldColor.g, arr[i].g, 40);
+        bSteps[i] = Utils::generateStep(oldColor.b, arr[i].b, 40);
+        yield();
+    }
+
+    for (int i = 0; i < 40; i++)
+    {
+        for (int j = 0; j < length; j++)
+        {
+            RGB oldColor = oldColors[j];
+            oldColor.r = oldColor.r - rSteps[j];
+            oldColor.g = oldColor.g - gSteps[j];
+            oldColor.b = oldColor.b - bSteps[j];
+            oldColors[j] = oldColor;
+            pixels.setPixelColor(j, generateColor(oldColor));
+            yield();
+        }
+
+        pixels.show();
+    }
+    for (int i = 0; i < length; i++)
+    {
+        pixels.setPixelColor(i, generateColor(arr[i]));
+    }
+    pixels.show();
+}
+
 bool Strip::setLength(int length, std::function<void()> callback)
 {
     if (setLength(length))
@@ -105,6 +154,7 @@ bool Strip::setLength(int length, std::function<void()> callback)
 
 bool Strip::setLength(int pLength)
 {
+    Serial.println("lenght");
     if (length >= 0)
     {
         Storage::setCount(pLength);
@@ -125,20 +175,27 @@ void Strip::clear()
     pixels.show();
 }
 
-void Strip::setBrightness(int b)
+void Strip::setBrightness(int b, boolean silent)
 {
-    int runs = 30;
-    int bF = Storage::getBrightness();
-    int difference = b - bF;
-    int step = Utils::stepRound(difference / runs);
-
-    for (int i = 0; i < runs; i++)
+    if (silent)
     {
-        brightness += step;
-        showPattern(currentPattern, true);
-        yield();
+        brightness = b;
     }
-    brightness = b;
+    else
+    {
+        int runs = 30;
+        int bF = Storage::getBrightness();
+        int difference = b - bF;
+        int step = Utils::stepRound(difference / runs);
+
+        for (int i = 0; i < runs; i++)
+        {
+            brightness += step;
+            showPattern(currentPattern, true);
+            yield();
+        }
+        brightness = b;
+    }
     Storage::setBrightness(b);
 }
 
@@ -147,7 +204,7 @@ void Strip::setBrightness(int b)
 void Strip::showColor(RGB color)
 {
     pixels.clear();
-    pixels.fill(generateColor(color.r, color.g, color.b), 0, length);
+    pixels.fill(generateColor(color), 0, length);
     delay(1);
     pixels.show();
 }
