@@ -98,15 +98,86 @@ int Utils::stepRound(float number)
                                         : ceil(number);
 }
 
-std::vector<RGB> Utils::generatePixels(int length, StripPattern pattern, int startIndex)
+std::vector<RGB> Utils::offPixels(int length)
 {
     std::vector<RGB> arr;
     arr.resize(length);
-    std::vector<RGB>::iterator it;
-    it = arr.begin();
     for (int i = 0; i < length; i++)
     {
-        arr[i] = pattern.colors[0];
+        arr[i] = RGB({0, 0, 0});
+    }
+    return arr;
+}
+
+std::vector<RGB> Utils::generatePixels(int length, StripPattern pattern, int startIndex)
+{
+    switch (pattern.pattern)
+    {
+    default:
+    case 1:
+    case 2:
+    case 5:
+        return generatePixelsSingle(length, pattern.colors[0]);
+    case 3:
+        return generatePixelsGradient(length, pattern.colors[0], pattern.colors[1]);
+    case 4:
+        return generatePixelsRunner(length, pattern.colors[0], startIndex);
+    }
+}
+
+std::vector<RGB> Utils::generatePixelsSingle(int length, RGB color)
+{
+
+    std::vector<RGB> arr;
+    arr.resize(length);
+    for (int i = 0; i < length; i++)
+    {
+        arr[i] = color;
+    }
+    return arr;
+}
+std::vector<RGB> Utils::generatePixelsGradient(int length, RGB first, RGB second)
+{
+
+    std::vector<RGB> arr;
+    arr.resize(length);
+
+    float difR = (float)(first.r - second.r) / (float)length;
+    float difG = (float)(first.g - second.g) / (float)length;
+    float difB = (float)(first.b - second.b) / (float)length;
+
+    int rStep = -Utils::stepRound(difR); // 255 - 0 /15
+    int gStep = -Utils::stepRound(difG);
+    int bStep = -Utils::stepRound(difB);
+
+    int r = first.r;
+    int g = first.g;
+    int b = first.b;
+    for (int i = 0; i < length; i++)
+    {
+        int goalR = r + rStep;
+        int goalG = g + gStep;
+        int goalB = b + bStep;
+
+        r = goalR <= 255 && goalR >= 0 ? goalR : r;
+        g = goalG <= 255 && goalG >= 0 ? goalG : g;
+        b = goalB <= 255 && goalB >= 0 ? goalB : b;
+
+        arr[i] = RGB({r, g, b});
+    }
+    return arr;
+}
+std::vector<RGB> Utils::generatePixelsRunner(int length, RGB color, int startIndex)
+{
+    std::vector<RGB> arr;
+    arr.resize(length);
+    for (int i = 0; i < length; i++)
+    {
+        arr[i] = RGB({0, 0, 0});
+    }
+    for (int i = startIndex; i < ceil(length / 15); i++)
+    {
+        arr[i] = color;
     }
     return arr;
 }

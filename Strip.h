@@ -21,19 +21,18 @@ public:
     void showColor(RGB color);
     void update();
     void stopRunning();
-    void fadeToColor(RGB oldColor, RGB color);
     void showCustom(JsonArray colors);
     void fadeOff();
 
 private:
-    void fadeToPixelArray(std::vector<RGB> arr);
+    std::vector<RGB> readStrip();
+    void fadeToPixelArray(std::vector<RGB> from, std::vector<RGB>);
     void showGradient(RGB first, RGB second);
     void fadeUpdate();
     void runnerUpdate();
     void rainbowUpdate();
     void setNewGoal();
     void fadeToColor(RGB color);
-    uint32_t generateColor(int r, int g, int b);
     uint32_t generateColor(RGB color);
     RGB pixelColorToRGB(uint32_t color);
 };
