@@ -175,7 +175,7 @@ std::vector<RGB> Utils::generatePixelsRunner(int length, RGB color, int startInd
     {
         arr[i] = RGB({0, 0, 0});
     }
-    for (int i = startIndex; i < ceil(length / 15); i++)
+    for (int i = startIndex; i < startIndex + ceil((float)length / 15.0f); i++)
     {
         arr[i] = color;
     }

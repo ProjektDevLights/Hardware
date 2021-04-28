@@ -60,10 +60,9 @@ void Strip::showPattern(StripPattern pattern, boolean noFade)
      */
 
     std::vector<RGB> oldColors = readStrip();
-    std::vector<RGB> newColors = Utils::generatePixels(length, pattern);
+    std::vector<RGB> newColors = Utils::generatePixels(length, pattern, currentStartLed);
 
     fadeToPixelArray(oldColors, newColors);
-
     currentPattern = pattern;
     activePattern = pattern.pattern;
 
@@ -92,7 +91,7 @@ void Strip::fadeToPixelArray(std::vector<RGB> from, std::vector<RGB> to)
     int gSteps[length];
     int bSteps[length];
 
-    int runs = 200;
+    int runs = 40;
 
     for (int i = 0; i < length; i++)
     {
@@ -278,7 +277,7 @@ void Strip::runnerUpdate()
     {
         lastUpdate = currentMillis;
         const int count = Storage::getCount();
-        const int leds = ceil(count / 15);
+        const int leds = ceil((float)count / 15.0f);
         pixels.clear();
         for (int i = currentStartLed; i < currentStartLed + leds; i++)
         {
