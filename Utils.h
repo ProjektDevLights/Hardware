@@ -20,6 +20,7 @@ public:
     static DynamicJsonDocument stringToJSON(String raw);
     static int stepRound(float number);
     static int generateStep(int start, int end, int time, int delay = 1);
+    static RGB interpolate(RGB first, RGB second, int step, int steps);
     static std::vector<RGB> generatePixels(int length, StripPattern pattern, int startIndex = 0);
     static std::vector<RGB> offPixels(int length);
 

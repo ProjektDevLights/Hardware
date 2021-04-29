@@ -27,6 +27,7 @@ public:
 private:
     std::vector<RGB> readStrip();
     void fadeToPixelArray(std::vector<RGB> from, std::vector<RGB>);
+    void showPixelArray(std::vector<RGB> colors);
     void showGradient(RGB first, RGB second);
     void fadeUpdate();
     void runnerUpdate();

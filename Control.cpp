@@ -51,7 +51,7 @@ void Control::loop()
         if (command == "on")
         {
             Storage::setIsOn(true);
-            initStrip(true);
+            initStrip();
         }
         if (command == "brightness")
         {

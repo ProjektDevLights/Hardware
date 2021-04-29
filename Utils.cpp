@@ -181,3 +181,11 @@ std::vector<RGB> Utils::generatePixelsRunner(int length, RGB color, int startInd
     }
     return arr;
 }
+
+RGB Utils::interpolate(RGB first, RGB second, int step, int steps)
+{
+    int r = (first.r * (steps - step) + second.r * step) / steps;
+    int g = (first.g * (steps - step) + second.g * step) / steps;
+    int b = (first.b * (steps - step) + second.b * step) / steps;
+    return RGB({r, g, b});
+}

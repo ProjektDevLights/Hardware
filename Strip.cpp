@@ -18,6 +18,7 @@ RGB goalColor;
 unsigned long lastUpdate;
 int brightness;
 int length = 150;
+int curInterIndex = 0;
 
 Adafruit_NeoPixel pixels(1000, PIN, PIXELFORMAT);
 Strip::Strip()
@@ -62,7 +63,7 @@ void Strip::showPattern(StripPattern pattern, boolean noFade)
     std::vector<RGB> oldColors = readStrip();
     std::vector<RGB> newColors = Utils::generatePixels(length, pattern, currentStartLed);
 
-    fadeToPixelArray(oldColors, newColors);
+    noFade ? showPixelArray(newColors) : fadeToPixelArray(oldColors, newColors);
     currentPattern = pattern;
     activePattern = pattern.pattern;
 
@@ -121,6 +122,16 @@ void Strip::fadeToPixelArray(std::vector<RGB> from, std::vector<RGB> to)
     for (int i = 0; i < length; i++)
     {
         pixels.setPixelColor(i, generateColor(to[i]));
+    }
+    pixels.show();
+}
+
+void Strip::showPixelArray(std::vector<RGB> colors)
+{
+    for (int i = 0; i < length; i++)
+    {
+        pixels.setPixelColor(i, generateColor(colors[i]));
+        yield();
     }
     pixels.show();
 }
@@ -231,39 +242,26 @@ void Strip::fadeUpdate()
 {
 
     unsigned long currentMillis = millis();
-
     if (currentMillis - lastUpdate > currentPattern.timeout)
     {
+
+        RGB curCol = Utils::interpolate(currentColor, goalColor, curInterIndex, 256);
+        showColor(curCol);
+        curInterIndex++;
         lastUpdate = currentMillis;
+        Serial.println("-----------------------------");
 
-        int r = currentColor.r;
-        int g = currentColor.g;
-        int b = currentColor.b;
+        Serial.print("show:    ");
+        Serial.println(curCol.toString());
+        Serial.print("current: ");
+        Serial.println(currentColor.toString());
+        Serial.print("goal:    ");
+        Serial.println(goalColor.toString());
 
-        int rTo = goalColor.r;
-        int gTo = goalColor.g;
-        int bTo = goalColor.b;
-
-        int rFac = rTo == r ? 0 : r < rTo ? 1
-                                          : -1;
-        int gFac = gTo == g ? 0 : g < gTo ? 1
-                                          : -1;
-        int bFac = bTo == b ? 0 : b < bTo ? 1
-                                          : -1;
-
-        int goalR = (r + rFac);
-        int goalG = (g + gFac);
-        int goalB = (b + bFac);
-
-        r = ((goalR <= rTo && rFac == 1) || (goalR >= rTo && rFac == -1)) ? goalR : r;
-        g = ((goalG <= gTo && gFac == 1) || (goalG >= gTo && gFac == -1)) ? goalG : g;
-        b = ((goalB <= bTo && bFac == 1) || (goalB >= bTo && bFac == -1)) ? goalB : b;
-        showColor({r, g, b});
-        currentColor = RGB({r, g, b});
-        currentPattern.colors[0] = RGB({r, g, b});
-
-        if (currentColor == goalColor)
+        if (curCol == goalColor)
         {
+            curInterIndex = 0;
+            currentColor = goalColor;
             setNewGoal();
             Storage::setStripPattern(currentPattern);
         }
