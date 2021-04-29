@@ -60,6 +60,7 @@ void Strip::showPattern(StripPattern pattern, boolean noFade)
      * rainbow: 5 
      */
 
+    // evtl wegnehmen wenn noFade
     std::vector<RGB> oldColors = readStrip();
     std::vector<RGB> newColors = Utils::generatePixels(length, pattern, currentStartLed);
 
@@ -69,6 +70,7 @@ void Strip::showPattern(StripPattern pattern, boolean noFade)
 
     Storage::setStripPattern(pattern);
     currentColor = pattern.colors[0];
+    curInterIndex = 0;
 
     goalColor = RGB({255, 0, 0});
 }
@@ -249,15 +251,8 @@ void Strip::fadeUpdate()
         showColor(curCol);
         curInterIndex++;
         lastUpdate = currentMillis;
-        Serial.println("-----------------------------");
 
-        Serial.print("show:    ");
-        Serial.println(curCol.toString());
-        Serial.print("current: ");
-        Serial.println(currentColor.toString());
-        Serial.print("goal:    ");
-        Serial.println(goalColor.toString());
-
+        currentPattern.colors[0] = curCol;
         if (curCol == goalColor)
         {
             curInterIndex = 0;
