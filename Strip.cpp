@@ -49,6 +49,10 @@ void Strip::stopRunning()
     activePattern = -1;
 }
 
+void Strip::showCurrentPattern(boolean noFade)
+{
+    showPattern(currentPattern, noFade);
+}
 void Strip::showPattern(StripPattern pattern, boolean noFade)
 {
     /**
@@ -68,7 +72,6 @@ void Strip::showPattern(StripPattern pattern, boolean noFade)
     currentPattern = pattern;
     activePattern = pattern.pattern;
 
-    Storage::setStripPattern(pattern);
     currentColor = pattern.colors[0];
     curInterIndex = 0;
 
@@ -89,33 +92,14 @@ std::vector<RGB> Strip::readStrip()
 void Strip::fadeToPixelArray(std::vector<RGB> from, std::vector<RGB> to)
 {
     std::vector<RGB> oldColors;
-    oldColors.resize(to.size());
-    int rSteps[length];
-    int gSteps[length];
-    int bSteps[length];
 
     int runs = 40;
-
-    for (int i = 0; i < length; i++)
-    {
-        RGB oldColor = pixelColorToRGB(pixels.getPixelColor(i));
-        oldColors[i] = from[i];
-        rSteps[i] = Utils::generateStep(from[i].r, to[i].r, runs);
-        gSteps[i] = Utils::generateStep(from[i].g, to[i].g, runs);
-        bSteps[i] = Utils::generateStep(from[i].b, to[i].b, runs);
-        yield();
-    }
 
     for (int i = 0; i < runs; i++)
     {
         for (int j = 0; j < length; j++)
         {
-            RGB oldColor = oldColors[j];
-            oldColor.r = oldColor.r - rSteps[j];
-            oldColor.g = oldColor.g - gSteps[j];
-            oldColor.b = oldColor.b - bSteps[j];
-            oldColors[j] = oldColor;
-            pixels.setPixelColor(j, generateColor(oldColor));
+            pixels.setPixelColor(j, generateColor(Utils::interpolateColor(from[j], to[j], i, runs)));
             yield();
         }
 
@@ -138,16 +122,6 @@ void Strip::showPixelArray(std::vector<RGB> colors)
     pixels.show();
 }
 
-bool Strip::setLength(int length, std::function<void()> callback)
-{
-    if (setLength(length))
-    {
-        callback();
-        return true;
-    }
-    return false;
-}
-
 bool Strip::setLength(int pLength)
 {
     if (length >= 0)
@@ -155,10 +129,9 @@ bool Strip::setLength(int pLength)
         Storage::setCount(pLength);
         pixels.clear();
         pixels.show();
-        delay(10);
         pixels.updateLength(pLength);
         length = pLength;
-        delay(10);
+        showCurrentPattern();
         return true;
     }
     return false;
@@ -180,13 +153,10 @@ void Strip::setBrightness(int b, boolean silent)
     {
         int runs = 30;
         int bF = Storage::getBrightness();
-        int difference = b - bF;
-        int step = Utils::stepRound(difference / runs);
-
         for (int i = 0; i < runs; i++)
         {
-            brightness += step;
-            showPattern(currentPattern, true);
+            brightness = Utils::interpolateValue(bF, b, i, runs);
+            showCurrentPattern(true);
             yield();
         }
         brightness = b;
@@ -247,7 +217,7 @@ void Strip::fadeUpdate()
     if (currentMillis - lastUpdate > currentPattern.timeout)
     {
 
-        RGB curCol = Utils::interpolate(currentColor, goalColor, curInterIndex, 256);
+        RGB curCol = Utils::interpolateColor(currentColor, goalColor, curInterIndex, 255);
         showColor(curCol);
         curInterIndex++;
         lastUpdate = currentMillis;

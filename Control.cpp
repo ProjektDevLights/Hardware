@@ -4,42 +4,42 @@ Control::Control()
 {
 }
 
-bool first = true;
+void Control::setup()
+{
+    client.connect("devlight.local", 2389);
+
+    if (Storage::getIsCustom())
+    {
+        sendPattern();
+    }
+
+    strip.setLength(Storage::getCount());
+    strip.setBrightness(Storage::getBrightness(), true);
+
+    StripPattern pattern = Storage::getStripPattern();
+    strip.showPattern(pattern);
+}
 
 void Control::loop()
 {
-    if (first)
-    {
-        client.connect("devlight.local", 2389);
-        first = false;
-
-        if (Storage::getIsCustom())
-        {
-            sendPattern();
-        }
-
-        initStrip();
-    }
 
     strip.update();
 
     DynamicJsonDocument data = Utils::stringToJSON(readData());
     String command = data["command"];
-    yield();
     if (!data.isNull())
     {
         if (command == "count")
         {
             int count = (int)data["data"];
-            strip.setLength(count, [this]() {
-                initStrip();
-            });
+            strip.setLength(count);
         }
         if (command == "leds")
         {
             StripPattern pattern = Utils::generatePattern(data["data"]["pattern"], data["data"]["colors"], data["data"]["timeout"]);
             bool noFade = (bool)data["data"]["noFade"];
             // const bool noFade = noFadeJson.is<bool>();
+            Storage::setStripPattern(pattern);
             strip.showPattern(pattern, noFade);
         }
         if (command == "off")
@@ -51,7 +51,9 @@ void Control::loop()
         if (command == "on")
         {
             Storage::setIsOn(true);
-            initStrip();
+
+            StripPattern pattern = Storage::getStripPattern();
+            strip.showPattern(pattern);
         }
         if (command == "brightness")
         {
@@ -85,7 +87,7 @@ void Control::loop()
             RGB color = Utils::generateColor(data["data"]["color"]);
             strip.showColor(color);
             delay(int(data["data"]["time"]));
-            initStrip(true);
+            strip.showCurrentPattern();
         }
         if (command == "logStorage")
         {
@@ -143,26 +145,6 @@ String Control::readData()
     delay(50);
     digitalWrite(LED_BUILTIN, HIGH); */
     return readString;
-}
-/**
- * 
- * @param light when light mode is true length and brightnes dont get reset and no fade is happening
- * 
- * 
- * 
- */
-void Control::initStrip(boolean light)
-{
-    if (!light)
-    {
-        strip.setLength(Storage::getCount());
-        strip.setBrightness(Storage::getBrightness(), true);
-    }
-    if (Storage::getIsOn())
-    {
-        StripPattern pattern = Storage::getStripPattern();
-        strip.showPattern(pattern, light);
-    }
 }
 
 void Control::sendPattern()

@@ -10,6 +10,7 @@ class Control
 {
 public:
     Control();
+    void setup();
     void loop();
 
 private:
@@ -18,7 +19,6 @@ private:
     DynamicJsonDocument stringToJSON(String raw);
     void fading(int delay);
     void fadeTo(RGB color, int timeout);
-    void initStrip(boolean light = false);
     void sendPattern();
 };
 

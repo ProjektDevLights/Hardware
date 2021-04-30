@@ -4,7 +4,7 @@
 #include "StringSplitter.h"
 #include "ArduinoJson.h"
 #include "RGB.h"
-
+#include "HSV.h"
 #include "StripPattern.h"
 
 #ifndef Utils_h
@@ -18,16 +18,12 @@ public:
     static String generatePatternString(int patternNr);
     static RGB generateColor(String color);
     static DynamicJsonDocument stringToJSON(String raw);
-    static int stepRound(float number);
-    static int generateStep(int start, int end, int time, int delay = 1);
-    static RGB interpolate(RGB first, RGB second, int step, int steps);
+    static RGB interpolateColor(RGB first, RGB second, int step, int steps);
+    static int interpolateValue(int first, int second, int step, int steps);
     static std::vector<RGB> generatePixels(int length, StripPattern pattern, int startIndex = 0);
     static std::vector<RGB> offPixels(int length);
-
-private:
-    static std::vector<RGB> generatePixelsSingle(int length, RGB color);
-    static std::vector<RGB> generatePixelsGradient(int length, RGB first, RGB second);
-    static std::vector<RGB> generatePixelsRunner(int length, RGB color, int startIndex);
+    static RGB HSVtoRGB(HSV hsv);
+    static HSV RGBtoHSV(RGB rgb);
 };
 
 #endif

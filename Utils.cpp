@@ -82,22 +82,6 @@ DynamicJsonDocument Utils::stringToJSON(String raw)
     return doc;
 }
 
-int Utils::generateStep(int start, int end, int time, int delay)
-{
-    if (delay < 1)
-    {
-        delay = 1;
-    }
-    float floatStep = ((start - end) * delay) / time;
-    return stepRound(floatStep);
-}
-
-int Utils::stepRound(float number)
-{
-    return number == 0 ? 0 : number < 0 ? floor(number)
-                                        : ceil(number);
-}
-
 std::vector<RGB> Utils::offPixels(int length)
 {
     std::vector<RGB> arr;
@@ -111,81 +95,42 @@ std::vector<RGB> Utils::offPixels(int length)
 
 std::vector<RGB> Utils::generatePixels(int length, StripPattern pattern, int startIndex)
 {
+    std::vector<RGB> arr;
+    arr.resize(length);
+    RGB firstColor = pattern.colors[0];
+    RGB secondColor = pattern.colors[0];
+
     switch (pattern.pattern)
     {
     default:
     case 1:
     case 2:
     case 5:
-        return generatePixelsSingle(length, pattern.colors[0]);
+        std::fill(arr.begin(), arr.end(), firstColor);
+        break;
     case 3:
-        return generatePixelsGradient(length, pattern.colors[0], pattern.colors[1]);
+        for (int i = 0; i < length; i++)
+        {
+            arr[i] = interpolateColor(firstColor, secondColor, i, length);
+        }
+        break;
     case 4:
-        return generatePixelsRunner(length, pattern.colors[0], startIndex);
-    }
-}
-
-std::vector<RGB> Utils::generatePixelsSingle(int length, RGB color)
-{
-
-    std::vector<RGB> arr;
-    arr.resize(length);
-    for (int i = 0; i < length; i++)
-    {
-        arr[i] = color;
-    }
-    return arr;
-}
-std::vector<RGB> Utils::generatePixelsGradient(int length, RGB first, RGB second)
-{
-
-    std::vector<RGB> arr;
-    arr.resize(length);
-
-    float difR = (float)(first.r - second.r) / (float)length;
-    float difG = (float)(first.g - second.g) / (float)length;
-    float difB = (float)(first.b - second.b) / (float)length;
-
-    int rStep = -Utils::stepRound(difR); // 255 - 0 /15
-    int gStep = -Utils::stepRound(difG);
-    int bStep = -Utils::stepRound(difB);
-
-    int r = first.r;
-    int g = first.g;
-    int b = first.b;
-    for (int i = 0; i < length; i++)
-    {
-        int goalR = r + rStep;
-        int goalG = g + gStep;
-        int goalB = b + bStep;
-
-        r = goalR <= 255 && goalR >= 0 ? goalR : r;
-        g = goalG <= 255 && goalG >= 0 ? goalG : g;
-        b = goalB <= 255 && goalB >= 0 ? goalB : b;
-
-        arr[i] = RGB({r, g, b});
-    }
-    return arr;
-}
-std::vector<RGB> Utils::generatePixelsRunner(int length, RGB color, int startIndex)
-{
-    std::vector<RGB> arr;
-    arr.resize(length);
-    for (int i = 0; i < length; i++)
-    {
-        arr[i] = RGB({0, 0, 0});
-    }
-    for (int i = startIndex; i < startIndex + ceil((float)length / 15.0f); i++)
-    {
-        arr[i] = color;
+        std::fill(arr.begin(), arr.end(), RGB({0, 0, 0}));
+        std::fill(arr.begin() + startIndex, arr.begin() + startIndex + ceil(length / 15), firstColor);
+        break;
     }
     return arr;
 }
 
-RGB Utils::interpolate(RGB first, RGB second, int step, int steps)
+RGB Utils::interpolateColor(RGB first, RGB second, int step, int steps)
 {
     int r = (first.r * (steps - step) + second.r * step) / steps;
     int g = (first.g * (steps - step) + second.g * step) / steps;
     int b = (first.b * (steps - step) + second.b * step) / steps;
     return RGB({r, g, b});
+}
+
+int Utils::interpolateValue(int first, int second, int step, int steps)
+{
+    return (first * (steps - step) + second * step) / steps;
 }

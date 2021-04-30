@@ -13,8 +13,8 @@ class Strip
 {
 public:
     Strip();
-    bool setLength(int length, std::function<void()> callback);
     bool setLength(int length);
+    void showCurrentPattern(boolean noFade = false);
     void showPattern(StripPattern pattern, boolean noFade = false);
     void clear();
     void setBrightness(int brightness, boolean silent = false);

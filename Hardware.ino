@@ -1,11 +1,13 @@
 #include "Setup.h"
 #include "Control.h"
 
+Control control;
+
 void setup()
 {
     Setup::run();
+    control.setup();
 }
-Control control;
 void loop()
 {
     unsigned long t1 = millis();
