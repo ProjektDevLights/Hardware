@@ -10,8 +10,10 @@ void Control::setup() {
     strip.setLength(Storage::getCount());
     strip.setBrightness(Storage::getBrightness(), true);
 
-    StripPattern pattern = Storage::getStripPattern();
-    strip.showPattern(pattern);
+    if (Storage::getIsOn()) {
+        StripPattern pattern = Storage::getStripPattern();
+        strip.showPattern(pattern);
+    }
 }
 
 void Control::loop() {
