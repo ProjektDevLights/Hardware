@@ -23,7 +23,6 @@ Install the following libraries
 - [ArduinoHttpClient](https://github.com/arduino-libraries/ArduinoHttpClient)
 - [StringSplitter](https://github.com/aharshac/StringSplitter)
 - [AdafruitNeopixel](https://github.com/adafruit/Adafruit_NeoPixel)
-- [ColorConverter](https://github.com/luisllamasbinaburo/Arduino-ColorConverter)
 
 To compile and upload the code to the ESP connect it to your PC and hit the upload button in the IDE.
 

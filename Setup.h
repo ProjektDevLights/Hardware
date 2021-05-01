@@ -1,23 +1,21 @@
 #include "Arduino.h"
 #include "EEPROM.h"
-#include "Storage.h"
 #include "ESP8266WiFi.h"
-#include "HttpClient.h"
-
-#include "WifiManager.h"
-#include "Utils.h"
 #include "GlobalStrip.h"
+#include "HttpClient.h"
+#include "Storage.h"
 #include "StripPattern.h"
+#include "Utils.h"
+#include "WifiManager.h"
 
 #ifndef Setup_h
 #define Setup_h
 
-class Setup
-{
-public:
+class Setup {
+   public:
     static void run();
 
-private:
+   private:
     static void init();
     static void first();
     static void restart();

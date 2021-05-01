@@ -1,6 +1,5 @@
 #include "Adafruit_NeoPixel.h"
 #include "Arduino.h"
-
 #include "RGB.h"
 #include "Storage.h"
 #include "StripPattern.h"
@@ -9,9 +8,8 @@
 #ifndef Strip_h
 #define Strip_h
 
-class Strip
-{
-public:
+class Strip {
+   public:
     Strip();
     void showCurrentPattern(bool noFade = false);
     void showPattern(StripPattern pattern, bool noFade = false);
@@ -25,7 +23,7 @@ public:
     void update();
     void stopRunning();
 
-private:
+   private:
     int activePattern = -1;
     int brightness = 255;
     bool curDirectionForward = true;

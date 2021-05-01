@@ -2,8 +2,7 @@
 
 #ifndef StripPattern_h
 #define StripPattern_h
-struct StripPattern
-{
+struct StripPattern {
     RGB colors[10];
     /**
      * Patterns:
@@ -12,15 +11,12 @@ struct StripPattern
      * gradient: 3
      * runner: 4
      * rainbow: 5
-     *
      */
     int pattern;
     int timeout;
-    String toString()
-    {
+    String toString() {
         String string = String("");
-        for (int i = 0; i < 10; i++)
-        {
+        for (int i = 0; i < 10; i++) {
             string.concat("Color ");
             string.concat(i + 1);
             string.concat(": ");

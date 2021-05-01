@@ -1,24 +1,19 @@
-#include "GlobalStrip.h"
 #include "Arduino.h"
 #include "ArduinoJson.h"
-
+#include "GlobalStrip.h"
 #include "Utils.h"
 
 #ifndef Control_h
 #define Control_h
-class Control
-{
-public:
-    Control();
+class Control {
+   public:
     void setup();
     void loop();
 
-private:
+   private:
     WiFiClient client;
+    bool isCustom;
     String readData();
-    DynamicJsonDocument stringToJSON(String raw);
-    void fading(int delay);
-    void fadeTo(RGB color, int timeout);
     void sendPattern();
 };
 
