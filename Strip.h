@@ -13,28 +13,40 @@ class Strip
 {
 public:
     Strip();
+    void showCurrentPattern(bool noFade = false);
+    void showPattern(StripPattern pattern, bool noFade = false);
+    void showColor(RGB color, bool noFade = false);
+    void showCustom(JsonArray colors);
+    void showOff(bool noFade = false);
+
     bool setLength(int length);
-    void showCurrentPattern(boolean noFade = false);
-    void showPattern(StripPattern pattern, boolean noFade = false);
-    void clear();
-    void setBrightness(int brightness, boolean silent = false);
-    void showColor(RGB color);
+    bool setBrightness(int brightness, bool silent = false);
+
     void update();
     void stopRunning();
-    void showCustom(JsonArray colors);
-    void fadeOff();
 
 private:
-    std::vector<RGB> readStrip();
-    void fadeToPixelArray(std::vector<RGB> from, std::vector<RGB>);
+    int activePattern = -1;
+    int brightness = 255;
+    bool curDirectionForward = true;
+    int curFadeIndex = 0;
+    int curRunIndex = 20;
+    StripPattern curPattern;
+    int hue = 0;
+    int length = 150;
+    unsigned long lastUpdate = 0;
+
     void showPixelArray(std::vector<RGB> colors);
-    void showGradient(RGB first, RGB second);
+    void fadeToPixelArray(std::vector<RGB> from, std::vector<RGB>);
+
     void fadeUpdate();
-    void runnerUpdate();
     void rainbowUpdate();
-    void setNewGoal();
-    void fadeToColor(RGB color);
-    uint32_t generateColor(RGB color);
+    void runnerUpdate();
+
+    std::vector<RGB> readStrip();
+    int getFirstRunLed();
+
+    uint32_t RGBToPixelColor(RGB color);
     RGB pixelColorToRGB(uint32_t color);
 };
 #endif

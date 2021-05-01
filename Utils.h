@@ -4,7 +4,6 @@
 #include "StringSplitter.h"
 #include "ArduinoJson.h"
 #include "RGB.h"
-#include "HSV.h"
 #include "StripPattern.h"
 
 #ifndef Utils_h
@@ -21,9 +20,8 @@ public:
     static RGB interpolateColor(RGB first, RGB second, int step, int steps);
     static int interpolateValue(int first, int second, int step, int steps);
     static std::vector<RGB> generatePixels(int length, StripPattern pattern, int startIndex = 0);
-    static std::vector<RGB> offPixels(int length);
-    static RGB HSVtoRGB(HSV hsv);
-    static HSV RGBtoHSV(RGB rgb);
+    static std::vector<RGB> generatePixelsColor(int length, RGB color);
+    static std::vector<RGB> generatePixelsOff(int length);
 };
 
 #endif

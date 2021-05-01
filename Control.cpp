@@ -46,7 +46,7 @@ void Control::loop()
         {
             Storage::setIsOn(false);
             strip.stopRunning();
-            strip.fadeOff();
+            strip.showOff(true);
         }
         if (command == "on")
         {
@@ -64,7 +64,7 @@ void Control::loop()
         {
             client.write("shutdown\n");
             client.stop();
-            strip.clear();
+            strip.showOff(true);
             ESP.restart();
         }
         if (command == "serverRestart")
@@ -77,7 +77,7 @@ void Control::loop()
         if (command == "reset")
         {
             Storage::clear();
-            strip.clear();
+            strip.showOff(true);
             client.write("shutdown\n");
             client.stop();
             ESP.restart();
@@ -85,7 +85,7 @@ void Control::loop()
         if (command == "blink")
         {
             RGB color = Utils::generateColor(data["data"]["color"]);
-            strip.showColor(color);
+            strip.showColor(color, true);
             delay(int(data["data"]["time"]));
             strip.showCurrentPattern();
         }

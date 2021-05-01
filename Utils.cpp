@@ -82,7 +82,7 @@ DynamicJsonDocument Utils::stringToJSON(String raw)
     return doc;
 }
 
-std::vector<RGB> Utils::offPixels(int length)
+std::vector<RGB> Utils::generatePixelsOff(int length)
 {
     std::vector<RGB> arr;
     arr.resize(length);
@@ -92,13 +92,20 @@ std::vector<RGB> Utils::offPixels(int length)
     }
     return arr;
 }
+std::vector<RGB> Utils::generatePixelsColor(int length, RGB color)
+{
+    std::vector<RGB> arr;
+    arr.resize(length);
+    std::fill(arr.begin(), arr.end(), color);
+    return arr;
+}
 
 std::vector<RGB> Utils::generatePixels(int length, StripPattern pattern, int startIndex)
 {
     std::vector<RGB> arr;
     arr.resize(length);
     RGB firstColor = pattern.colors[0];
-    RGB secondColor = pattern.colors[0];
+    RGB secondColor = pattern.colors[1];
 
     switch (pattern.pattern)
     {
