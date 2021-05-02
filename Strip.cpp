@@ -89,7 +89,7 @@ bool Strip::setLength(int pLength) {
 }
 
 bool Strip::setBrightness(int b, bool silent) {
-    if (!b >= 0) return false;
+    if (!(b >= 0)) return false;
     if (silent) {
         brightness = b;
     } else {
