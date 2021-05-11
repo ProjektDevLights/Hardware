@@ -1,5 +1,8 @@
 #include "Control.h"
 
+NTPClient ntp;
+unsigned long epochTime;
+unsigned long startMillis;
 void Control::setup() {
     client.connect("devlight.local", 2389);
 
@@ -7,6 +10,7 @@ void Control::setup() {
         sendPattern();
     }
 
+    ntp.begin("pool.ntp.org");
     strip.setLength(Storage::getCount());
     strip.setBrightness(Storage::getBrightness(), true);
 
@@ -51,6 +55,10 @@ void Control::loop() {
             strip.stopRunning();
             JsonArray array = data["data"];
             strip.showCustom(array);
+
+            long long time = ntp.millis();
+            uint32_t *p = (uint32_t *)&time;
+            Serial.printf("%X%08X\n", p[1], p[0]);
             Storage::setIsCustom(true);
             isCustom = true;
         } else if (command != "logStorage") {

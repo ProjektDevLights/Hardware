@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "ArduinoJson.h"
+#include "ESPNtpClient.h"
 #include "GlobalStrip.h"
 #include "Utils.h"
 
