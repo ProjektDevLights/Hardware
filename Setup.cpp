@@ -5,12 +5,16 @@ Strip strip;
 void Setup::run() {
     init();
     digitalWrite(LED_BUILTIN, LOW);
-    WifiManager::connect("AnGeTiNet", "SchwarzWaelderKirschTorte2017");
+    WifiManager::connect("devlight", "HatJaNur5StundenGedauert");
     if (Storage::getIsSetup()) {
         restart();
     } else {
         first();
     }
+    ArduinoOTA.onEnd([]() {
+      Serial.println("\nEnd");
+      ESP.restart();
+    });
     ArduinoOTA.begin();
     digitalWrite(LED_BUILTIN, HIGH);
 }
