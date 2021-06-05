@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include "ArduinoOTA.h"
 #include "EEPROM.h"
 #include "ESP8266WiFi.h"
 #include "GlobalStrip.h"

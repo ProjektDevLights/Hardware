@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "ArduinoJson.h"
+#include "ArduinoOTA.h"
 #include "GlobalStrip.h"
 #include "Utils.h"
 

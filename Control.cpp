@@ -17,6 +17,8 @@ void Control::setup() {
 }
 
 void Control::loop() {
+    ArduinoOTA.handle();
+
     strip.update();
 
     DynamicJsonDocument data = Utils::stringToJSON(readData());
