@@ -52,10 +52,8 @@ void Strip::showColor(RGB color, bool noFade) {
 
 void Strip::showCustom(JsonArray colors) {
     pixels.clear();
-    Serial.println(colors.size());
     for (int i = 0; i < colors.size(); i++) {
         RGB color = Utils::stringToRGB(colors.getElement(i));
-        Serial.println(color.toString());
         pixels.setPixelColor(i, RGBToPixelColor(color));
     }
     pixels.show();
@@ -215,6 +213,7 @@ std::vector<RGB> Strip::readStrip() {
 }
 
 int Strip::getFirstRunLed() {
+    if (length == 1) return 1;
     int leds = ceil((float)length / 15.0f);
     bool f = curDirectionForward;
     int from = f ? 0 : length - leds;
