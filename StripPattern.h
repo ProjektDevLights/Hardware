@@ -11,6 +11,7 @@ struct StripPattern {
      * gradient: 3
      * runner: 4
      * rainbow: 5
+     * custom: 6
      */
     int pattern;
     int timeout;

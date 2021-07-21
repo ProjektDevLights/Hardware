@@ -25,9 +25,11 @@ void Strip::showPattern(StripPattern pattern, bool noFade) {
      * gradient: 3
      * runner: 4
      * rainbow: 5
+     * custom: 6
      */
 
     // evtl wegnehmen wenn noFade
+
     std::vector<RGB> oldColors = readStrip();
     std::vector<RGB> newColors =
         Utils::generatePixels(length, pattern, getFirstRunLed());
@@ -48,15 +50,6 @@ void Strip::showColor(RGB color, bool noFade) {
         fadeToPixelArray(readStrip(),
                          Utils::generatePixelsColor(length, color));
     }
-}
-
-void Strip::showCustom(JsonArray colors) {
-    pixels.clear();
-    for (int i = 0; i < colors.size(); i++) {
-        RGB color = Utils::stringToRGB(colors.getElement(i));
-        pixels.setPixelColor(i, RGBToPixelColor(color));
-    }
-    pixels.show();
 }
 
 void Strip::showOff(bool noFade) {
@@ -133,7 +126,6 @@ void Strip::showPixelArray(std::vector<RGB> colors) {
 
 void Strip::fadeToPixelArray(std::vector<RGB> from, std::vector<RGB> to) {
     std::vector<RGB> oldColors;
-
     int runs = 40;
 
     for (int i = 0; i < runs; i++) {

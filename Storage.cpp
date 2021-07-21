@@ -135,6 +135,7 @@ StripPattern Storage::getStripPattern() {
 
 void Storage::setCustom(std::vector<RGB> colors) {
     EEPROM.write(add_custom_len, colors.size());
+
     int work_add = add_custom;
     for (int i = 0; i < colors.size(); i++) {
         Storage::writeColor(colors[i], work_add);
@@ -145,6 +146,7 @@ void Storage::setCustom(std::vector<RGB> colors) {
 
 std::vector<RGB> Storage::getCustom() {
     int len = EEPROM.read(add_custom_len);
+    Serial.println(len);
     std::vector<RGB> colors;
     colors.resize(len);
     int work_add = add_custom;
@@ -152,6 +154,7 @@ std::vector<RGB> Storage::getCustom() {
         colors[i] = readColor(work_add);
         work_add += 3;
     }
+    Serial.println(colors.size());
     return colors;
 }
 

@@ -27,8 +27,9 @@ RGB Utils::stringToRGB(String colorString) {
 
 std::vector<RGB> Utils::jsonArrayToVector(JsonArray array) {
     std::vector<RGB> colors;
-    for (int i = 0; i < colors.size(); i++) {
-        RGB color = Utils::stringToRGB(array.getElement(i));
+    int i = 0;
+    for (String str_color : array) {
+        RGB color = Utils::stringToRGB(str_color);
         colors.push_back(color);
     }
     return colors;
@@ -131,6 +132,10 @@ std::vector<RGB> Utils::generatePixels(int length, StripPattern pattern,
             std::fill(arr.begin(), arr.end(), RGB({0, 0, 0}));
             std::fill(arr.begin() + startIndex,
                       arr.begin() + startIndex + ceil(length / 15), firstColor);
+            break;
+        case 6:
+            arr = Storage::getCustom();
+            arr.resize(length, RGB({0, 0, 0}));
             break;
     }
     return arr;

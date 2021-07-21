@@ -38,8 +38,8 @@ class Storage {
     static const int add_on = 0x29;          // length: 1
     static const int add_pattern = 0x2a;     // length: 1
     static const int add_setup = 0x2b;       // length: 1
-    static const int add_timeout = 0x2c;     // length: 1
-    static const int add_custom_len = 0x2d;  // length: 1
-    static const int add_custom = 0x2e;      // length: 1500 next: 0x0609
+    static const int add_timeout = 0x2c;     // length: 5
+    static const int add_custom_len = 0x31;  // length: 1
+    static const int add_custom = 0x32;      // length: 1500 next: 0x0609
 };
 #endif

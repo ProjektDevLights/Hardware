@@ -14,7 +14,6 @@ class Strip {
     void showCurrentPattern(bool noFade = false);
     void showPattern(StripPattern pattern, bool noFade = false);
     void showColor(RGB color, bool noFade = false);
-    void showCustom(JsonArray colors);
     void showOff(bool noFade = false);
 
     bool setLength(int length);

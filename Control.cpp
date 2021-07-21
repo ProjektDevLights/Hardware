@@ -51,8 +51,10 @@ void Control::loop() {
             strip.stopRunning();
             JsonArray array = data["data"];
             Storage::setCustom(Utils::jsonArrayToVector(array));
-            strip.showCustom(array);
-            isCustom = true;
+            StripPattern pattern;
+            pattern.pattern = 6;
+            Storage::setStripPattern(pattern);
+            strip.showPattern(pattern);
         }
         if (command == "count") {
             int count = (int)data["data"];

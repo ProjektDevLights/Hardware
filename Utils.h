@@ -2,6 +2,7 @@
 #include "ArduinoJson.h"
 #include "ESP8266WiFi.h"
 #include "RGB.h"
+#include "Storage.h"
 #include "StringSplitter.h"
 #include "StripPattern.h"
 
