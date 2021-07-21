@@ -16,14 +16,16 @@ class Storage {
     static String getId();
     static void setIp(IPAddress ip);
     static IPAddress getIp();
-    static void setIsCustom(bool isCustom);
-    static bool getIsCustom();
     static void setIsOn(bool isOn);
     static bool getIsOn();
     static void setIsSetup(bool isSetup);
     static bool getIsSetup();
     static void setStripPattern(StripPattern color);
     static StripPattern getStripPattern();
+    static void setCustom(std::vector<RGB> colors);
+    static std::vector<RGB> getCustom();
+    static void writeColor(RGB color, int add, bool commit = false);
+    static RGB readColor(int add);
     static void clear();
     static void print();
 
@@ -31,12 +33,13 @@ class Storage {
     static const int add_brightness = 0x01;  // length: 1
     static const int add_color = 0x02;       // length: 3*10 = 30
     static const int add_count = 0x21;       // length: 1
-    static const int add_custom = 0x22;      // length 1
     static const int add_id = 0x23;          // length: 2
     static const int add_ip = 0x25;          // length: 4
     static const int add_on = 0x29;          // length: 1
     static const int add_pattern = 0x2a;     // length: 1
     static const int add_setup = 0x2b;       // length: 1
     static const int add_timeout = 0x2c;     // length: 1
+    static const int add_custom_len = 0x2d;  // length: 1
+    static const int add_custom = 0x2e;      // length: 1500 next: 0x0609
 };
 #endif

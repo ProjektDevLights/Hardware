@@ -25,6 +25,15 @@ RGB Utils::stringToRGB(String colorString) {
     return color;
 }
 
+std::vector<RGB> Utils::jsonArrayToVector(JsonArray array) {
+    std::vector<RGB> colors;
+    for (int i = 0; i < colors.size(); i++) {
+        RGB color = Utils::stringToRGB(array.getElement(i));
+        colors.push_back(color);
+    }
+    return colors;
+}
+
 String Utils::patternIntToString(int patternNr) {
     switch (patternNr) {
         case 1:

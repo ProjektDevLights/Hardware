@@ -12,8 +12,8 @@ void Setup::run() {
         first();
     }
     ArduinoOTA.onEnd([]() {
-      Serial.println("\nEnd");
-      ESP.restart();
+        Serial.println("\nEnd");
+        ESP.restart();
     });
     ArduinoOTA.begin();
     digitalWrite(LED_BUILTIN, HIGH);
@@ -23,14 +23,14 @@ void Setup::run() {
 void Setup::init() {
     strip = Strip();
     Serial.begin(115200);
-    EEPROM.begin(64);
+    EEPROM.begin(2048);
     pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void Setup::first() {
     Serial.println("first");
     WiFiClient c;
-    HttpClient client(c, "devlight.local", 80);
+    HttpClient client(c, "192.168.178.104", 80);
     int err = 0;
     String request = "/esp/setup?ip=";
     request += Utils::ipToString(WifiManager::getIp());
@@ -79,7 +79,7 @@ void Setup::restart() {
         Utils::ipToString(WifiManager::getIp())) {
         Serial.println("ipchange");
         WiFiClient c;
-        HttpClient client(c, "devlight.local", 80);
+        HttpClient client(c, "192.168.178.104", 80);
         int err = 0;
         // TODO save and read id
         String id = Storage::getId();

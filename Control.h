@@ -15,7 +15,6 @@ class Control {
     WiFiClient client;
     bool isCustom;
     String readData();
-    void sendPattern();
 };
 
 #endif

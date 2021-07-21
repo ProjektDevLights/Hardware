@@ -58,21 +58,6 @@ IPAddress Storage::getIp() {
     IPAddress ip(ipBytes[0], ipBytes[1], ipBytes[2], ipBytes[3]);
     return ip;
 }
-// isCustom
-
-void Storage::setIsCustom(bool isCustom) {
-    if (isCustom) {
-        EEPROM.write(add_custom, 1);
-    } else {
-        EEPROM.write(add_custom, 0);
-    }
-    EEPROM.commit();
-}
-
-bool Storage::getIsCustom() {
-    int custom = EEPROM.read(add_custom);
-    return custom == 1;
-}
 // isOn
 void Storage::setIsOn(bool isOn) {
     if (isOn) {
@@ -148,16 +133,56 @@ StripPattern Storage::getStripPattern() {
     return pattern;
 }
 
+void Storage::setCustom(std::vector<RGB> colors) {
+    EEPROM.write(add_custom_len, colors.size());
+    int work_add = add_custom;
+    for (int i = 0; i < colors.size(); i++) {
+        Storage::writeColor(colors[i], work_add);
+        work_add += 3;
+    }
+    EEPROM.commit();
+}
+
+std::vector<RGB> Storage::getCustom() {
+    int len = EEPROM.read(add_custom_len);
+    std::vector<RGB> colors;
+    colors.resize(len);
+    int work_add = add_custom;
+    for (int i = 0; i < len; i++) {
+        colors[i] = readColor(work_add);
+        work_add += 3;
+    }
+    return colors;
+}
+
+void Storage::writeColor(RGB color, int add, bool commit) {
+    EEPROM.write(add, color.r);
+    EEPROM.write(add + 1, color.g);
+    EEPROM.write(add + 2, color.b);
+
+    if (commit) {
+        EEPROM.commit();
+    }
+}
+
+RGB Storage::readColor(int add) {
+    RGB color;
+    color.r = EEPROM.read(add);
+    color.g = EEPROM.read(add + 1);
+    color.b = EEPROM.read(add + 2);
+    return color;
+}
+
 // clear
 void Storage::clear() {
-    for (int i = 0; i < 512; i++) {
+    for (int i = 0; i < 2048; i++) {
         EEPROM.write(i, 0x00);
     }
     EEPROM.commit();
 }
 // print
 void Storage::print() {
-    for (int i = 0; i < 0x30; i++) {
+    for (int i = add_custom_len; i < add_custom_len + 30; i++) {
         Serial.print("Add ");
         Serial.print(i, HEX);
         Serial.print(": ");

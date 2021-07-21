@@ -13,6 +13,7 @@ class Utils {
     static String ipToString(IPAddress ip);
     static DynamicJsonDocument stringToJSON(String raw);
     static RGB stringToRGB(String color);
+    static std::vector<RGB> jsonArrayToVector(JsonArray array);
     static String patternIntToString(int patternNr);
     static StripPattern dataToStripPattern(String pattern, JsonArray colorArray,
                                            int timeout);

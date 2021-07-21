@@ -1,11 +1,7 @@
 #include "Control.h"
 
 void Control::setup() {
-    client.connect("devlight.local", 2389);
-
-    if (Storage::getIsCustom()) {
-        sendPattern();
-    }
+    client.connect("192.168.178.104", 2389);
 
     strip.setLength(Storage::getCount());
     strip.setBrightness(Storage::getBrightness(), true);
@@ -54,15 +50,9 @@ void Control::loop() {
         if (command == "custom") {
             strip.stopRunning();
             JsonArray array = data["data"];
+            Storage::setCustom(Utils::jsonArrayToVector(array));
             strip.showCustom(array);
-            Storage::setIsCustom(true);
             isCustom = true;
-        } else if (command != "logStorage") {
-            if (isCustom) {
-                Storage::setIsCustom(false);
-                sendPattern();
-                isCustom = false;
-            }
         }
         if (command == "count") {
             int count = (int)data["data"];
@@ -115,22 +105,4 @@ String Control::readData() {
         yield();
     }
     return readString;
-}
-
-void Control::sendPattern() {
-    DynamicJsonDocument jsonDoc(512);
-    DynamicJsonDocument arrayDoc(512);
-    JsonArray colors = arrayDoc.to<JsonArray>();
-    StripPattern pattern = Storage::getStripPattern();
-    jsonDoc["pattern"] = Utils::patternIntToString(pattern.pattern);
-    if (pattern.timeout > 0) {
-        jsonDoc["timeout"] = pattern.timeout;
-    }
-    for (RGB color : pattern.colors) {
-        colors.add(color.toString());
-    }
-    jsonDoc["colors"] = colors;
-    String jsonString;
-    serializeJson(jsonDoc, jsonString);
-    client.print(jsonString);
 }
