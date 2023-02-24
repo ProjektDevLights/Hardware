@@ -37,14 +37,13 @@ void Strip::showPattern(StripPattern pattern, bool noFade) {
     curPattern = pattern;
     activePattern = pattern.pattern;
     curFadeIndex = 0;
-
     hue = Utils::RGBToHue(pattern.colors[0]);
 }
 
 void Strip::showColor(RGB color, bool noFade) {
     if (noFade) {
         pixels.clear();
-        pixels.fill(RGBToPixelColor(color), 0, length);
+        pixels.fill(RGBToPixelColor(color), Storage::getOffset(), length);
         pixels.show();
     } else {
         fadeToPixelArray(readStrip(),
@@ -118,6 +117,7 @@ void Strip::stopRunning() { activePattern = -1; }
 // private
 void Strip::showPixelArray(std::vector<RGB> colors) {
     for (int i = 0; i < length; i++) {
+
         pixels.setPixelColor(i, RGBToPixelColor(colors[i]));
         yield();
     }
@@ -127,7 +127,6 @@ void Strip::showPixelArray(std::vector<RGB> colors) {
 void Strip::fadeToPixelArray(std::vector<RGB> from, std::vector<RGB> to) {
     std::vector<RGB> oldColors;
     int runs = 40;
-
     for (int i = 0; i < runs; i++) {
         for (int j = 0; j < length; j++) {
             pixels.setPixelColor(j, RGBToPixelColor(Utils::interpolateColor(
@@ -167,7 +166,7 @@ void Strip::rainbowUpdate() {
     unsigned long currentMillis = millis();
     if (currentMillis - lastUpdate > curPattern.timeout) {
         lastUpdate = currentMillis;
-        pixels.fill(pixels.ColorHSV(hue * 182), 0, length);
+        pixels.fill(pixels.ColorHSV(hue * 182), Storage::getOffset(), length);
         pixels.show();
         hue = (hue + 60) % 360;
     }

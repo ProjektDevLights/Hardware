@@ -25,6 +25,7 @@ class Utils {
                                            int startIndex = 0);
     static RGB interpolateColor(RGB first, RGB second, int step, int steps);
     static int interpolateValue(int first, int second, int step, int steps);
+    static void blink(int runs, int secs_on, int secs_off);
 };
 
 #endif

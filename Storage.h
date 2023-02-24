@@ -12,6 +12,8 @@ class Storage {
     static int getBrightness();
     static void setCount(int count);
     static int getCount();
+    static bool setOffset(int offset);
+    static int getOffset();
     static void setId(String id);
     static String getId();
     static void setIp(IPAddress ip);
@@ -40,6 +42,7 @@ class Storage {
     static const int add_setup = 0x2b;       // length: 1
     static const int add_timeout = 0x2c;     // length: 5
     static const int add_custom_len = 0x31;  // length: 1
-    static const int add_custom = 0x32;      // length: 1500 next: 0x0609
+    static const int add_custom = 0x32;      // length: 1500 next: 0x060F
+    static const int add_offset = 0x22;    // length: 1
 };
 #endif

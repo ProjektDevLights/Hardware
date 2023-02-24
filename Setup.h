@@ -14,11 +14,11 @@
 
 class Setup {
    public:
-    static void run();
+    static bool run();
 
    private:
     static void init();
-    static void first();
-    static void restart();
+    static bool first();
+    static bool restart();
 };
 #endif

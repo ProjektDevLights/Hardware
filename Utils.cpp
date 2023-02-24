@@ -1,5 +1,6 @@
 #include "Utils.h"
 
+using namespace std;
 String Utils::ipToString(IPAddress ip) {
     return String(ip[0]) + "." + String(ip[1]) + "." + String(ip[2]) + "." +
            String(ip[3]);
@@ -111,30 +112,38 @@ std::vector<RGB> Utils::generatePixelsColor(int length, RGB color) {
 
 std::vector<RGB> Utils::generatePixels(int length, StripPattern pattern,
                                        int startIndex) {
+    int offset = Storage::getOffset();
     std::vector<RGB> arr;
     arr.resize(length);
+    std::fill(arr.begin(), arr.begin() + offset - 1, RGB({0, 0, 0}));
     RGB firstColor = pattern.colors[0];
     RGB secondColor = pattern.colors[1];
-
     switch (pattern.pattern) {
         default:
         case 1:
         case 2:
         case 5:
-            std::fill(arr.begin(), arr.end(), firstColor);
+            std::fill(arr.begin() + offset, arr.end(), firstColor);
             break;
         case 3:
-            for (int i = 0; i < length; i++) {
-                arr[i] = interpolateColor(firstColor, secondColor, i, length);
+            for (int i = offset; i < length; i++) {
+                arr[i] = interpolateColor(firstColor, secondColor, i - offset, (length - offset));
             }
             break;
         case 4:
-            std::fill(arr.begin(), arr.end(), RGB({0, 0, 0}));
-            std::fill(arr.begin() + startIndex,
-                      arr.begin() + startIndex + ceil(length / 15), firstColor);
+            std::fill(arr.begin() + offset, arr.end(), RGB({0, 0, 0}));
+            std::fill(arr.begin() + startIndex + offset,
+                      arr.begin() + startIndex + offset +
+                          ceil((length - offset) / 15),
+                      firstColor);
             break;
         case 6:
-            arr = Storage::getCustom();
+
+            vector<RGB> n = Storage::getCustom();
+            arr.resize(offset);
+            for(int i = 0; i < n.size(); i++){
+              arr.push_back(n[i]);
+            }
             arr.resize(length, RGB({0, 0, 0}));
             break;
     }
@@ -150,4 +159,12 @@ RGB Utils::interpolateColor(RGB first, RGB second, int step, int steps) {
 
 int Utils::interpolateValue(int first, int second, int step, int steps) {
     return (first * (steps - step) + second * step) / steps;
+}
+void Utils::blink(int runs, int secs_on, int secs_off) {
+    for (int i = 0; i < runs; i++) {
+        digitalWrite(LED_BUILTIN, LOW);
+        delay(secs_on);
+        digitalWrite(LED_BUILTIN, HIGH);
+        delay(secs_off);
+    }
 }

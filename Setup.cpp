@@ -2,21 +2,19 @@
 
 Strip strip;
 // publics
-void Setup::run() {
+bool Setup::run() {
     init();
     digitalWrite(LED_BUILTIN, LOW);
     WifiManager::connect("devlight", "HatJaNur5StundenGedauert");
-    if (Storage::getIsSetup()) {
-        restart();
-    } else {
-        first();
-    }
+
+    bool success = Storage::getIsSetup() ? restart() : first();
+    if (!success) return false;
     ArduinoOTA.onEnd([]() {
         Serial.println("\nEnd");
         ESP.restart();
     });
     ArduinoOTA.begin();
-    digitalWrite(LED_BUILTIN, HIGH);
+    return true;
 }
 
 // privates
@@ -27,10 +25,9 @@ void Setup::init() {
     pinMode(LED_BUILTIN, OUTPUT);
 }
 
-void Setup::first() {
-    Serial.println("first");
+bool Setup::first() {
     WiFiClient c;
-    HttpClient client(c, "192.168.178.104", 80);
+    HttpClient client(c, "192.168.0.236", 80);
     int err = 0;
     String request = "/esp/setup?ip=";
     request += Utils::ipToString(WifiManager::getIp());
@@ -65,21 +62,25 @@ void Setup::first() {
                 startup.colors[0] = {29, 233, 182};
                 startup.pattern = 1;
                 Storage::setStripPattern(startup);
+                return true;
             }
         } else {
+            return false;
         }
     } else {
+        return false;
     }
+    return false;
 }
 
-void Setup::restart() {
+bool Setup::restart() {
     // if ip changes notify server
     Serial.println("restart");
     if (Utils::ipToString(Storage::getIp()) !=
         Utils::ipToString(WifiManager::getIp())) {
         Serial.println("ipchange");
         WiFiClient c;
-        HttpClient client(c, "192.168.178.104", 80);
+        HttpClient client(c, "192.168.0.236", 80);
         int err = 0;
         // TODO save and read id
         String id = Storage::getId();
@@ -91,9 +92,14 @@ void Setup::restart() {
             err = client.responseStatusCode();
             if (err == 200) {
                 Storage::setIp(WifiManager::getIp());
+                return true;
             } else {
+                return false;
             }
         } else {
+            return false;
         }
+        return false;
     }
+    return true;
 }

@@ -15,6 +15,16 @@ void Storage::setCount(int count) {
 
 int Storage::getCount() { return int(EEPROM.read(add_count)); }
 
+// offset
+bool Storage::setOffset(int offset) {
+    if (offset > Storage::getCount()) return false;
+    EEPROM.write(add_offset, offset);
+    EEPROM.commit();
+    return true;
+}
+
+int Storage::getOffset() { return int(EEPROM.read(add_offset)); }
+
 // id
 void Storage::setId(String id) {
     int add_w = add_id;
@@ -146,7 +156,6 @@ void Storage::setCustom(std::vector<RGB> colors) {
 
 std::vector<RGB> Storage::getCustom() {
     int len = EEPROM.read(add_custom_len);
-    Serial.println(len);
     std::vector<RGB> colors;
     colors.resize(len);
     int work_add = add_custom;
@@ -154,7 +163,6 @@ std::vector<RGB> Storage::getCustom() {
         colors[i] = readColor(work_add);
         work_add += 3;
     }
-    Serial.println(colors.size());
     return colors;
 }
 

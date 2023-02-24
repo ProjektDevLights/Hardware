@@ -1,15 +1,17 @@
 #include "Control.h"
 
 void Control::setup() {
-    client.connect("192.168.178.104", 2389);
-
+    client.connect("192.168.0.236", 2389);
+    Storage::setOffset(15);
     strip.setLength(Storage::getCount());
+
     strip.setBrightness(Storage::getBrightness(), true);
 
     if (Storage::getIsOn()) {
         StripPattern pattern = Storage::getStripPattern();
         strip.showPattern(pattern);
     }
+    Serial.println("control setup done");
 }
 
 void Control::loop() {
